@@ -3,6 +3,10 @@ import Link from "next/link"
 
 export default function Home() {
   return (
+    <>
+    <div className="mt-5 mb-3">
+      Welcome to APSquared where we talk about the fun tools we create while we #buildinpublic.  
+    </div>
     <div className="prose dark:prose-invert">
       {allPosts.map((post) => (
         <article key={post._id}>
@@ -13,5 +17,6 @@ export default function Home() {
         </article>
       ))}
     </div>
+    </>
   )
 }
