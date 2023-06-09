@@ -1,6 +1,6 @@
 # APSquared Site
 
-Work in progress. 
+Work in progress. Update.
 
 [Visit APSquared.co](https://www.apsquared.co)
 
