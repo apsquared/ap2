@@ -22,12 +22,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body
         className={`antialiased min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 ${inter.className}`}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark">
-          <div className="max-w-2xl mx-auto py-10 px-4">
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <div className="max-w-4xl mx-auto py-10 px-4">
             <header>
               <div className="flex items-center justify-between">
                 <ModeToggle />
-                <span className="ml-5"><a href="/">APSquared</a></span>
+                <span className="ml-5 text-2xl"><a href="/">APSquared</a></span>
                 <nav className="ml-auto text-sm font-medium space-x-6">
                   <Link href="/">Home</Link>
                   <Link href="/about">About</Link>
