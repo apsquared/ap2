@@ -33,6 +33,12 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.description,
+    openGraph:{
+      images:[post.image ? post.image : ""]
+    },
+    twitter:{
+      
+    }
   }
 }
 
@@ -50,7 +56,7 @@ export default async function PostPage({ params }: PostProps) {
   }
 
   return (
-    <article className="py-6 prose dark:prose-invert">
+    <article className="py-6 w-full prose dark:prose-invert max-w-none ">
       <h1 className="mb-2">{post.title}</h1>
       {post.description && (
         <p className="text-xl mt-0 text-slate-700 dark:text-slate-200">

@@ -1,0 +1,63 @@
+---
+title: OpenGraph Image + Text Generator
+description: Generate OpenGraph Images with Text for Twitter
+date: "2023-10-07"
+image: https://www.apsquared.co/tweet2.png
+---
+
+## Background 
+
+Twitter/X recently changed how they display links in posts.  In the past meta tags for title and description (or specific twitter meta tags) were used when displaying
+a link.  Users would see the title and description underneath the image from the twitter:image or og:image tag.  
+
+[Elon Musk didn't like](https://www.theverge.com/2023/10/4/23903859/x-elon-musk-headlines-links-image-twitter) the extra text and has removed the
+text so only the image is displayed.
+
+![Tweet without title](/tweet1.png)
+
+### The Problem for Developers, Bloggers or Content Creators
+
+For websites, blogs and content creators this may cause a small headache as the images may not convey the content as well without the title 
+and description.  For APSquared's site [BarGPT](https://www.bargpt.app) we didn't want to lose the name and description in our AI generated cocktails.
+
+### The Solution
+
+A simple solution we used for BarGPT was to use [Vercel's OG Image](https://vercel.com/docs/functions/edge-functions/og-image-generation) generation.  We got the idea thanks to [this tweet](https://twitter.com/rauchg/status/1710418965821039100).  After seeing how cool this worked out we decided 
+to make the solution available for others.
+
+Here is an example of a Tweet using our solution:
+
+![Tweet with images](/tweet4.png)
+
+### How You Can Use It!
+
+This is the best part, you don't need to do much to use our solution.  We provide a simple url where you plugin an image, title and description and we generate an image to use in your meta tags.
+
+#### Image URL Format
+
+```
+https://www.apsquared.co/api/og?title=TITLE&summary=SUMMARY&image=IMAGEURL
+``` 
+
+Note: The summary field is optional.
+
+Here's an example of the URL you would use for this [BarGPT cocktail](https://www.bargpt.app/aicocktail/the-pontiff-s-elixir):
+
+```
+https://www.apsquared.co/api/og?
+title=The%20Pontiff%27s%20Elixir
+&summary=Dark%20and%20mysterious%20cocktail
+&image=https://heybairtender.s3.amazonaws.com/recipes/the-pontiff-s-elixir.png
+```
+
+Once you create that URL for you page/content you update your meta tags:
+
+```
+    <meta property="og:image" content=URL/>
+    <meta property="twitter:image" content=URL/>
+```
+
+That's basically it.  If you have any questions you can [reach out to us on Twitter](https://twitter.com/APSquaredDev).  Hopefully this works out well for you.  
+
+
+**Be sure to [follow us on Twitter](https://twitter.com/APSquaredDev) for updates on this little project.**

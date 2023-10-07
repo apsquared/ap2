@@ -1,20 +1,27 @@
 import { ImageResponse } from '@vercel/og';
 import { NextRequest } from 'next/server';
 
-export const config = {
-  runtime: 'edge',
-};
+export const runtime = 'edge'
 
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    const title = searchParams.get('name') as string;
+
+    if (!searchParams.get('title')){
+      return generateErrorImage("Required Parameter title missing.")
+    }
+
+    if (!searchParams.get('image')){
+      return generateErrorImage("Required Parameter image missing.")
+    }
+
+    const title = searchParams.get('title') as string;
     let desc = searchParams.get('summary') as string;
     const imgurl = searchParams.get('image') as string;
     let fitParam = searchParams.get('fit');
     
     if (!desc || desc=='undefined'){
-        desc = "An AI Generated Cocktail"
+        desc = ""
     }
 
     type fitStyle='contain' | 'cover' | 'fill' | 'none' | 'scale-down';
@@ -115,5 +122,27 @@ export async function GET(request: Request) {
       );
     
 
-
 } 
+
+function generateErrorImage(message:string):ImageResponse{
+  return new ImageResponse(
+    (
+      <div 
+      style={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        fontWeight: 600,
+        color: "white",
+        backgroundColor: "black",
+        padding:0,
+        margin:0,
+       }}>
+        <h1>{message}</h1>
+      </div>
+    )
+  );
+}
