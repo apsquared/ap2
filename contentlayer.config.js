@@ -24,6 +24,9 @@ export const Page = defineDocumentType(() => ({
     description: {
       type: "string",
     },
+    image:{
+      type: "string",
+    }
   },
   computedFields,
 }))
@@ -44,6 +47,9 @@ export const Post = defineDocumentType(() => ({
       type: "date",
       required: true,
     },
+    image:{
+      type: "string",
+    }
   },
   computedFields,
 }))

@@ -27,7 +27,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <header>
               <div className="flex items-center justify-between">
                 <ModeToggle />
-                <span className="ml-5 text-2xl"><a href="/">APSquared</a></span>
+                <span className="ml-5 text-3xl"><a className="font-extrabold bg-[radial-gradient(ellipse_at_right,_var(--tw-gradient-stops))] from-sky-400 to-indigo-900 bg-clip-text text-transparent" href="/">APSquared</a></span>
                 <nav className="ml-auto text-sm font-medium space-x-6">
                   <Link href="/">Home</Link>
                   <Link href="/about">About</Link>
