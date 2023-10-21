@@ -3,6 +3,7 @@ import { allPosts } from "contentlayer/generated"
 
 import { Metadata } from "next"
 import { Mdx } from "@/components/mdx-components"
+import { title } from "process"
 
 interface PostProps {
   params: {
@@ -34,10 +35,14 @@ export async function generateMetadata({
     title: post.title,
     description: post.description,
     openGraph:{
-      images:[post.image ? post.image : ""]
+      images:[post.image ? post.image : ""],
+      title:post.title,
+      description:post.description,
     },
     twitter:{
-      
+      images:[post.image ? post.image : ""],
+      title: post.title,
+      description: post.description,
     }
   }
 }
