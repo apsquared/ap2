@@ -8,10 +8,12 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
     if (!searchParams.get('title')){
+      console.log("OG ERRORs "+request.url);
       return generateErrorImage("Required Parameter title missing.")
     }
 
     if (!searchParams.get('image')){
+      console.log("OG ERROR "+request.url);
       return generateErrorImage("Required Parameter image missing.")
     }
 
@@ -31,6 +33,8 @@ export async function GET(request: Request) {
     if (fitParam && (fitParam=='cover' || fitParam=='contain')){
         fit = fitParam
     }
+
+    console.log("OG SUCCESS "+request.url);
     
     return new ImageResponse(
         (
