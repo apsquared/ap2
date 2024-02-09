@@ -69,8 +69,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </div>
           <div className="flex space-x-4 pb-4 sm:pb-0">
             <a href="https://www.tvfoodmaps.com">TVFoodMaps</a>     
-            <a href="https://www.bargpt.app">BarGPT</a> 
-            <a href="https://www.datavids.io">DataVids</a>    
+            <a href="https://www.bargpt.app">BarGPT</a>   
           </div>
           </footer>
           </div>
