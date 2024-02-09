@@ -8,7 +8,7 @@ export default function Home() {
       Welcome to APSquared where we talk about the fun tools we create while we #buildinpublic.  
     </div>
     <div className="prose dark:prose-invert">
-      <h1 className="text-2xl mt-10">APSquared Sites:</h1>
+      <h1 className="text-2xl mt-10">Posts by APSquared:</h1>
       {allPosts.map((post) => (
         <article key={post._id} className="flex">
           <img src={post.image} className="h-32 w-32 mr-10 rounded-lg"/>
