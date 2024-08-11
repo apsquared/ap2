@@ -2,6 +2,12 @@ import { allPosts } from "@/.contentlayer/generated"
 import Link from "next/link"
 
 export default function Home() {
+
+  allPosts.sort((b,a) => {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
+  
+
   return (
     <>
     <div className="mt-5 mb-3 text-lg">
@@ -16,6 +22,7 @@ export default function Home() {
           <Link href={post.slug}>
             <h2 className="text-xl">{post.title}</h2>
           </Link>
+          <h3 className="text-sm">{post.date.split("T")[0]}</h3>
           {post.description && <p>{post.description}</p>}
           </div>
         </article>
