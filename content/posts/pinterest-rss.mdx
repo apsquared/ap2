@@ -1,0 +1,219 @@
+---
+title: Automate Pinterest with RSS Feeds
+description: Automate Pinterest with RSS Feeds using just a few lines of code and Vercel OG image generation
+date: "2024-10-14"
+image: https://www.apsquared.co/pinterest.png
+---
+
+
+## Automating Pinterest: The Power of RSS Feeds and Code-Generated Images
+
+In today's digital marketing landscape, maintaining an active presence on social media platforms like Pinterest is crucial for businesses and content creators. However, consistently creating and posting high-quality pins can be time-consuming. That's where automation comes in, and I'm excited to share how you can leverage RSS feeds and code-generated images to streamline your Pinterest strategy.
+
+### The Benefits of Automation
+
+1. **Time-saving**: Automate the process of creating and posting pins, freeing up your time for other important tasks.
+2. **Consistency**: Ensure a regular flow of content to keep your audience engaged.
+3. **Scalability**: Easily manage multiple Pinterest accounts or increase your posting frequency without additional manual effort.
+4. **Customization**: Generate images tailored to your brand and content using code.
+
+![BarGPT's Pinterest Growth](https://www.apsquared.co/pinterest.png)
+
+
+### Real-World Example: BarGPT's AI Cocktail Images
+
+Let's look at how [BarGPT](https://bargpt.app), an AI-powered cocktail recipe generator, uses this approach to automate their [Pinterest presence](https://www.pinterest.com/bargptapp/cocktails-created-by-ai/).
+
+By implementing this fully automated approach, BarGPT has seen significant growth in their Pinterest presence without any daily manual effort. The combination of consistently posting high-quality, AI-generated cocktail images and leveraging RSS feeds for automation has resulted in impressive engagement and traffic increases, all while running on autopilot.
+
+Let's take a look at BarGPT's Pinterest growth over time:
+
+![BarGPT's Pinterest Growth](https://www.apsquared.co/pinterest-graph.png)
+
+As we can see from the graph, BarGPT experienced a steady increase in Pinterest engagement since implementing their automated strategy. The graph shows:
+
+1. A sharp initial rise in impressions and engagement
+2. Consistent growth over time
+3. Periodic spikes, likely corresponding to viral pins or seasonal trends
+
+This visual representation clearly demonstrates the power of combining AI-generated content with automated posting through RSS feeds. BarGPT's success story serves as a compelling example of how businesses can leverage technology to enhance their social media presence and drive traffic to their platforms without ongoing manual intervention.
+
+Getting this type of growth and traffic with ZERO daily work is pretty amazing, especially for busy Indie Hackers. Let's break down how this autonomous system works:
+
+#### Step 1: Generating Pinterest-ready Images with Code
+
+BarGPT uses Vercel's OG Image Generation to create visually appealing images for each AI-generated cocktail recipe. This process involves:
+
+1. Setting up an API endpoint that takes cocktail details as parameters.
+2. Using HTML and CSS to design a template for the cocktail images.
+3. Generating the image on-the-fly when the API is called.
+
+Here's a simplified example of how the image generation code might look:
+
+
+```javascript
+import { ImageResponse } from "next/og"
+
+
+export const size = {
+    width: 1000,
+    height: 1500,
+};
+
+
+export default async function createPinImage(title: string, image: string, desc: string): Promise<ImageResponse> {
+
+    console.log(image);
+
+    const font1 = fetch(
+        new URL("https://www.bargpt.app/Dosis-Medium.ttf")
+      ).then((res) => res.arrayBuffer());
+
+
+      const [font1Data] = await Promise.all([
+        font1
+      ]);
+
+    return new ImageResponse(
+
+        <div
+            style={{
+                height: '100%',
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                backgroundColor: '#fff',
+                fontSize: 90,
+                fontWeight: 600,
+                fontFamily: "MyFont",
+                backgroundImage: 'radial-gradient(circle, rgba(8,8,8,1) 50%, rgba(67,69,73,1) 100%)'
+            }}
+        >
+            <div style={{
+                paddingTop: '25px', paddingBottom: '25px',
+                color: 'white', textAlign:'center', paddingRight:'5px', paddingLeft:'5px',
+            }}>
+                {title}
+            </div>
+                <img
+
+                    src={image}
+                    alt="test"
+                    height={1000}
+                    width={1000}
+                    style={{
+                        width: '100%',
+                        objectFit: `contain`,
+                        objectPosition: "center",
+                    }}
+                />
+            <div style={{paddingTop:'35px',textAlign:'center',fontSize:'54px',color:'white',paddingRight:'5px', paddingLeft:'5px',}}>
+                {desc}
+            </div>
+           
+        </div>
+
+        ,
+        { ...size,
+            fonts: [
+                {
+                  name: "MyFont",
+                  data: font1Data,
+                  style: "normal",
+                  weight: 400,
+                },
+        ] });
+} 
+
+```
+
+#### Step 2: Creating an RSS Feed for Pinterest
+
+To automate the process of posting to Pinterest, you can create an RSS feed that publishes your content to your Pinterest account. Here's an example of the code we use:
+
+```javascript
+
+import { CocktailSer, getMostRecentRecipes } from '@/utils/cocktaildb'
+import { Feed } from 'feed'
+
+export const revalidate = 3600 // revalidate at most every hour
+
+
+export async function GET(request: Request, response:Response) {
+
+    const recipes:CocktailSer[] = await getMostRecentRecipes(); //getAllCocktails();
+    const rss = generateRSSFeed(recipes);
+
+
+    return new Response(rss, {
+        status: 200,
+        headers: { 'Content-Type': 'text/xml' },
+      });
+
+}
+
+
+function generateRSSFeed(recipes:CocktailSer[]) {
+    const siteURL = 'https://www.bargpt.app'
+    const date = new Date()
+    const author = {
+      name: 'BarBPT',
+      link: 'https://twitter.com/BarGPT',
+    }
+  
+    const feed = new Feed({
+      title: 'BarGPT AI Generated Cocktail Recipes',
+      description: 'Create your own AI generated cocktail recipes or browse through thousands of new innovative cocktails.',
+      id: siteURL,
+      link: siteURL,
+      image: `${siteURL}/bargpt.jpg`,
+      favicon: `${siteURL}/bargpt.jpg`,
+      copyright: `All rights reserved ${date.getFullYear()},`,
+      updated: date, // today's date
+      generator: 'Feed',
+      feedLinks: {
+        rss2: `${siteURL}/rss/feed.xml`, // xml format
+        json: `${siteURL}/rss/feed.json`, // json fromat
+      },
+      author,
+    })
+
+
+    recipes.map((r,i)=>{
+        const url = siteURL+"/ai-cocktail-recipe/"+r.cocktailid;
+        //console.log(r.imageurl);
+        if (r.imageurl && r.imageurl.indexOf('s3')>0){
+            feed.addItem({
+                title: r.name,
+                id: url,
+                link: url,
+                description: r.name+" an AI created cocktail. "+(r.shortsummary?r.shortsummary:""),
+                content: r.description,
+                author: [author],
+                contributor: [author],
+                date: new Date(r.dateString as string),
+                image: {
+                  type:'image/png',
+                  url: 'https://www.bargpt.app/api/ogpinterest1?name='+encodeURIComponent(r.name)+'&amp;image='+encodeURIComponent(r.imageurl)+"&amp;desc="+encodeURIComponent(r.shortsummary)
+       
+               }
+              })
+            }});
+        
+ 
+
+    return feed.rss2();
+ 
+}
+```
+
+#### Step 3: Posting to Pinterest with RSS Feeds
+
+Once you have your RSS feed set up, you can use it to post to Pinterest. Simple login to Pinterest, go to the settings screen and Bulk Pins option.
+Copy the URL of your RSS feed and paste it into the Pinterest Bulk Pins screen.  Usually the pins start showing up within an hour but can take up to 24 hours.
+
+Then sit back and watch your pins get auto posted every day just like we do at [BarGPT's Pinterest Page](https://www.pinterest.com/bargptapp/cocktails-created-by-ai/).
+
+If you have any questions please reach out to us at on [Twitter/X](https://x.com/APSquaredDev)
