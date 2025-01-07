@@ -1,0 +1,214 @@
+---
+title: Building Custom BlueSky Feeds with Next.js
+description: Learn how to create and host your own custom BlueSky feeds using Next.js and deploy them for free
+date: "2024-12-13"
+image: https://static1.howtogeekimages.com/wordpress/wp-content/uploads/2024/02/bluesky-logo-2.jpg
+---
+
+## What are Custom BlueSky Feeds?
+
+Custom feeds on BlueSky allow you to create personalized content streams based on specific criteria. Unlike the default algorithmic feed, custom feeds give you complete control over what content appears, making them powerful tools for content curation and discovery.
+
+## Sky Assistant Feeds
+
+My project [Sky Assistant](https://www.skyassistant.app) is a tool that allows you to create custom feeds based on your own "assistants" which filter content based on your own logic or using AI!  
+It is built with Next.js and deployed on Vercel. 
+
+This guide will show you how to build a custom feed using Next.js and deploy it to your existing project but isn't going to go into the details of how to filter messages or read from the BlueSky firehose.
+If you are just interested creating a custom feed without code then try out [Sky Assistant](https://www.skyassistant.app).
+
+Example Feed created with Sky Assistant(and the code below): [AI Agent Feed](https://bsky.app/profile/did:plc:bwc6trk3o3h2mgsy2eg2r2ee/feed/aiagents)
+
+## Feeds and Next.js
+
+Much of the officially supported BlueSky documentation shows how to build feeds using a custom dedicated server.
+However, if you are like me you already have a Next.js project hosted on Vercel or another platform.
+
+This guide will show you how to build a custom feed using Next.js and deploy it to your existing project.
+
+## BlueSky Feeds 
+
+One Next.js project can host multiple feeds.  Most of the real logic is in the feed generator, which uses the feed name to get the posts to display in the feed.
+This guide will focus on how to setup the feed generator but not the logic for getting the posts.  
+There is ample documentation on how to do that but if you are interested in dicussing it please [reach out](https://bsky.app/profile/apsquared.bsky.social).
+
+## The Setup
+
+### Assumptions
+
+- You have a Next.js project hosted on Vercel or another platform.
+- You have a basic understanding of Next.js and BlueSky.
+- You are using the app router. (Although I'm sure it could be done with the pages router)
+- You have an account on BlueSky.
+
+### Disclaimer
+
+This guide is not an official BlueSky guide and is not supported by Bluesky.  It is a guide to help you get started with custom feeds using Next.js.
+I'm not really an expert, but this is what worked for me.  If you have any questions or suggestions, [please let me know](https://bsky.app/profile/apsquared.bsky.social).
+
+### One Time Setup
+
+In your app directory, create a new folder called `.well-known` and insider there create the folder `did.json`. 
+Then create a `route.ts` file inside the `did.json` folder.  So you should have the following structure:
+
+```
+/app/.well-known/did.json/route.ts
+```
+
+In that file put the following code:
+
+```ts
+
+export async function GET() {
+    const HOSTNAME = /* your domain  e.g. skyassistant.app*/; 
+ 
+  return Response.json({
+    '@context': ['https://www.w3.org/ns/did/v1'],
+    'id': `did:web:${HOSTNAME}`,
+    'service': [
+      {
+        'id': '#bsky_fg',
+        'type': 'BskyFeedGenerator',
+        'serviceEndpoint': `https://${HOSTNAME}`
+      }
+    ]
+  })
+}
+
+```
+
+Next you will create a folders:
+
+```
+/app/xrpc/app.bsky.feed.describeFeedGenerator
+/app/xrpc/app.bsky.feed.getFeedSkeleton
+```
+
+Inside of `/app/xrpc/app.bsky.feed.describeFeedGenerator` create a `route.ts` file.  This is where the uri of all your feeds will be listed.
+
+```ts
+import { getAllPublishedFeeds } from "@/utils/feedutil";
+import config from "@/config";
+
+export const dynamic = 'force-dynamic'
+
+
+//uri format at://did:plc:bwc6trk3o3h2mgsy2egxxxxx/app.bsky.feed.generator/testfeedapsquared
+
+export async function GET() {
+    const HOSTNAME = config.domainName; 
+    const SERVICE_DID = `did:web:${HOSTNAME}`;
+ 
+     /* this function should get the list of all feeds  you are hosting, this is returned when we register a feed */
+    const feedInfo = await getAllPublishedFeeds(); 
+
+    const feedUris = feedInfo.map(f => ({
+        uri: f.feedUri,
+    }));
+
+    return Response.json({
+        did: SERVICE_DID,
+        feeds: feedUris,
+    });
+
+}
+```
+
+
+Inside of `/app/xrpc/app.bsky.feed.getFeedSkeleton` create a `route.ts` file.  This is what will be called when the feed is accessed.
+
+```ts
+
+export async function GET(request: Request) {
+    const HOSTNAME = config.domainName; 
+    const SERVICE_DID = `did:web:${HOSTNAME}`;
+ 
+    const { searchParams } = new URL(request.url);
+    const params: Record<string, string> = {};
+    
+    searchParams.forEach((value, key) => {
+        params[key] = value;
+    });
+    
+
+    const didResolver = new DidResolver({
+        plcUrl: 'https://plc.directory',
+    })
+
+    const feedUri = new AtUri(params.feed);
+    const feedId = feedUri.rkey;
+
+
+    /* conditionalize this logic based on the feedId */
+
+    if (feedId === 'test1') {
+      /* this is where you would get the posts for the feed , likely from the database 
+         for each different feedId you would return different set of posts in a different order based on your logic
+      */
+        return Response.json({
+            feed: [
+                { post: `at://did:plc:bwc6trk3o3h2mgsy2exxxxx/app.bsky.feed.post/3ld5wpccc3s78` },
+                { post: `at://did:plc:bwc6trk3o3h2mgsy2egxxxxx/app.bsky.feed.post/3ld5wpccc3s77` },
+            ]
+        });
+    } else if (feedId === 'test2') {
+        return Response.json({
+            feed: [
+                { post: `at://did:plc:b36trk3o3h2mgsy2eg2xxx/app.bsky.feed.post/3ld5xxxcc3s23` },
+            ]
+        });
+    }
+}
+```
+
+### Registering the Feed
+
+Registering a feed is done by calling the `putRecord` endpoint.  
+This can be done via a command line or you can create an API endpoint.  Here is a sample function that will do it.
+
+```ts
+export async function publishFeed(feedInfo: FeedInfo): Promise<{success: boolean, data: any}> {
+
+    const HOSTNAME = config.domainName; 
+    const SERVICE_DID = `did:web:${HOSTNAME}`;
+
+    /* get the AT Protocol Agent  for the user you want to register the feed as */
+    const agent = await getSkyAssistantAgent();
+
+    /* all of these are just string values you can provider for you feed */
+    const recordName = feedInfo.feedID;
+    const displayName = feedInfo.feedLabel
+    const description = feedInfo.feedDescription
+
+   const record = {
+    repo: agent.did,
+    collection: 'app.bsky.feed.generator',
+    rkey: recordName,
+    record: {
+      did: SERVICE_DID,
+      displayName: displayName,
+      description: description,
+      //avatar: avatarRef,
+      createdAt: new Date().toISOString(),
+    },
+  };
+
+  const resp = await agent.com.atproto.repo.putRecord(record);
+
+  if (resp.success) {
+    /* store in the database the feedUri */
+    await setFeedPublished(feedInfo.feedID, resp.data.uri);
+  }
+
+  return {success: resp.success, data: resp.data};
+}
+```
+
+At this point you can deploy your project and register the feed. 
+
+For each feed you want to add you will need to call the `publishFeed` function once and update the logic in the `getFeedSkeleton` function to return the posts for that feed.
+
+### Conclusion
+
+This is a rough guide to get you started.  I'm sure there are many ways to improve it. 
+If you have any questions or suggestions, [please let me know](https://bsky.app/profile/apsquared.bsky.social).
