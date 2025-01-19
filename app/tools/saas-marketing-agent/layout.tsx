@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "SaaS Marketing Content Generator | AI-Powered Marketing Tool",
+  title: "SaaS Marketing AI Agent",
   description: "Generate comprehensive marketing content for your SaaS product. Get AI-generated personas, competitor analysis, value propositions, and marketing suggestions.",
   keywords: [
     "SaaS marketing",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     "SaaS tool"
   ],
   openGraph: {
-    title: "SaaS Marketing Content Generator",
+    title: "SaaS Marketing AI Agent",
     description: "AI-powered tool to generate comprehensive marketing content for your SaaS product",
     type: "website",
     images: [{
