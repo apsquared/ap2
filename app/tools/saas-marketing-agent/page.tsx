@@ -212,7 +212,7 @@ export default function SaasMarketingAgent() {
             type="text"
             value={formData.competitor_hint}
             onChange={(e) => setFormData(prev => ({ ...prev, competitor_hint: e.target.value }))}
-            placeholder="Main competitor name or URL"
+            placeholder="Main competitor name (e.g. Product Hunt)"
             className="w-full p-2 border rounded dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <p className="text-sm text-gray-500 mt-1">Help us understand your market better</p>
