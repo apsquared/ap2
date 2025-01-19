@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getMarketingAgentStatus } from '@/utils/marketing-agent/marketing-client';
 
+export const maxDuration = 30;
+
+export const dynamic = 'force-dynamic';
+
 
 export async function GET(
     request: Request,

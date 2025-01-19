@@ -252,6 +252,8 @@ export class AgentClient {
    */
   public async getRunStatus(runId: string): Promise<AgentState> {
     try {
+      console.log("Getting run status for: ", runId);
+      console.log(`Full URL: ${this.axiosInstance.defaults.baseURL}/agent/${runId}/status`);
       const response = await this.axiosInstance.get(
         `/agent/${runId}/status`
       );

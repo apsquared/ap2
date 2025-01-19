@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { startMarketingAgent } from '@/utils/marketing-agent/marketing-client';
 
+export const maxDuration = 30;
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
