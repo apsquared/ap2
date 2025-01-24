@@ -1,15 +1,15 @@
 import { AgentClient } from "../agentclient/client/client";
 import { AgentState } from "../agentclient/schema/schema";
-import { MarketingInput } from "./types";
+import { CollegeFinderInput } from "./type";
 
 
 const baseUrl = process.env.AGENT_BASE_URL || 'http://localhost:8123';
 
-const MARKETING_AGENT = 'marketing-agent'; 
+const COLLEGE_AGENT = 'college-agent'; 
 
-export async function startMarketingAgent(input: MarketingInput):Promise<AgentState> {
-    const client = new AgentClient(baseUrl, MARKETING_AGENT,30000, true);
-    await client.updateAgent(MARKETING_AGENT);
+export async function startCollegeAgent(input: CollegeFinderInput):Promise<AgentState> {
+    const client = new AgentClient(baseUrl, COLLEGE_AGENT,30000, true);
+    await client.updateAgent(COLLEGE_AGENT);
 
 try {
     // Ensure we have agent info
@@ -32,8 +32,8 @@ try {
     }
 }
 
-export async function getMarketingAgentStatus(runId: string):Promise<AgentState> {
-    const client = new AgentClient(baseUrl, MARKETING_AGENT,30000, true);
-    await client.updateAgent(MARKETING_AGENT);
+export async function getCollegeAgentStatus(runId: string):Promise<AgentState> {
+    const client = new AgentClient(baseUrl, COLLEGE_AGENT,30000, true);
+    await client.updateAgent(COLLEGE_AGENT);
     return await client.getRunStatus(runId);
 }

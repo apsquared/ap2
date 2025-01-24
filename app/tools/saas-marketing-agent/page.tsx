@@ -4,6 +4,39 @@ import { useState, useEffect } from "react";
 import type { MarketingPlanState, Persona, Competitor } from "@/utils/marketing-agent/types";
 import { AgentState, AgentStatus } from "@/utils/agentclient/schema/schema";
 
+const SAMPLE_APPS = [
+  {
+    title: "Product Discovery",
+    description: "A modern Product Hunt Altnerative",
+    formData: {
+      appName: "Uneed.best",
+      appUrl: "https://uneed.best",
+      max_personas: 3,
+      competitor_hint: "Product Hunt"
+    }
+  },
+  {
+    title: "Social Media Management",
+    description: "AI-Powered Social Media Management",
+    formData: {
+      appName: "SkyAssistant",
+      appUrl: "https://www.skyassistant.app",
+      max_personas: 3,
+      competitor_hint: "Typefully"
+    }
+  },
+  {
+    title: "Email Marketing Platform",
+    description: "A MailChimp Alternative",
+    formData: {
+      appName: "Brevo",
+      appUrl: "https://www.brevo.com",
+      max_personas: 2,
+      competitor_hint: "MailChimp"
+    }
+  }
+];
+
 // Components
 const CompletedSection = ({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) => (
   <div className={className}>
@@ -98,14 +131,18 @@ export default function SaasMarketingAgent() {
       try {
         const response = await fetch(`/api/marketing-agent/status/${runId}`);
         const data: AgentState = await response.json();
-
+        console.log(JSON.stringify(data));
         if (response.ok) {
           setCurrentState(data.current_state as MarketingPlanState);
           if (data.status === AgentStatus.COMPLETED || data.status === AgentStatus.ERROR) {
-            setResult(data.current_state as MarketingPlanState);
-            setRunId(null); 
-            setLoading(false);
-          } else {
+              setResult(data.current_state as MarketingPlanState);
+              setRunId(null); 
+              setLoading(false);
+              if (data.status === AgentStatus.ERROR) {
+                setError("An Error has occured, the agent did not complete.");
+              }
+            }
+          else {
             // Schedule next poll 5 seconds after this response
             timeoutId = setTimeout(pollStatus, 5000);
           }
@@ -130,6 +167,36 @@ export default function SaasMarketingAgent() {
       }
     };
   }, [runId, loading]);
+
+  const handleSampleClick = (sampleData: typeof formData) => {
+    setFormData(sampleData);
+    setLoading(true);
+    setError("");
+    setResult(null);
+    setCurrentState(null);
+    
+    fetch("/api/marketing-agent/start", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(sampleData),
+    })
+    .then(async response => {
+      const data: AgentState = await response.json();
+      if (response.ok && data.run_id) {
+        setRunId(data.run_id);
+      } else {
+        setError((data as any).error || "Failed to start marketing agent");
+        setLoading(false);
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      setError("An error occurred. Please try again.");
+      setLoading(false);
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,6 +234,24 @@ export default function SaasMarketingAgent() {
       <p className="mb-4 text-gray-600 dark:text-gray-300">
         Enter your product details to generate comprehensive marketing content and analysis powered by AI.
       </p>
+
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold mb-3">Try these examples:</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {SAMPLE_APPS.map((sample, index) => (
+            <div key={index} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+              <h3 className="font-medium mb-2">{sample.title}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{sample.description}</p>
+              <button
+                onClick={() => handleSampleClick(sample.formData)}
+                className="text-blue-500 text-sm hover:text-blue-600"
+              >
+                Use this example →
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
       
       <form onSubmit={handleSubmit} className="space-y-4 bg-white dark:bg-slate-900 p-6 rounded-lg shadow-sm">
         <div>
@@ -243,7 +328,13 @@ export default function SaasMarketingAgent() {
             <p className="mt-4 font-semibold text-blue-600 dark:text-blue-400">Value Proposition:</p>
             <p className="mt-1">{result.value_proposition}</p>
           </CompletedSection>
-
+          <CompletedSection title="Marketing Suggestions">
+            <ul className="list-disc pl-5 space-y-2">
+              {result.marketing_suggestions?.map((suggestion: string, i: number) => (
+                <li key={i}>{suggestion}</li>
+              ))}
+            </ul>
+          </CompletedSection>
           <CompletedSection title="Key Features">
             <ul className="list-disc pl-5 space-y-2">
               {result.keyfeatures?.map((feature: string, i: number) => (
@@ -281,13 +372,7 @@ export default function SaasMarketingAgent() {
             </CompletedSection>
           )}
 
-          <CompletedSection title="Marketing Suggestions">
-            <ul className="list-disc pl-5 space-y-2">
-              {result.marketing_suggestions?.map((suggestion: string, i: number) => (
-                <li key={i}>{suggestion}</li>
-              ))}
-            </ul>
-          </CompletedSection>
+
 
           {result.keywords?.length > 0 && (
             <CompletedSection title="Keywords">
