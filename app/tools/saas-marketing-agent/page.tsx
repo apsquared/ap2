@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import type { MarketingPlanState, Persona, Competitor } from "@/utils/marketing-agent/types";
 import { AgentState, AgentStatus } from "@/utils/agentclient/schema/schema";
+import { useSearchParams, usePathname } from "next/navigation";
 
 const SAMPLE_APPS = [
   {
@@ -110,15 +111,20 @@ const LoadingMessage = ({ currentState }: { currentState: Partial<MarketingPlanS
 };
 
 export default function SaasMarketingAgent() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const jobId = searchParams.get('jobid');
+  const [shareableLink, setShareableLink] = useState<string>("");
+  
   const [formData, setFormData] = useState({
     appName: "",
     appUrl: "",
     max_personas: 3,
     competitor_hint: "",
   });
-  const [runId, setRunId] = useState<string | null>(null);
+  const [runId, setRunId] = useState<string | null>(jobId);
   const [result, setResult] = useState<MarketingPlanState | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!jobId);
   const [error, setError] = useState("");
   const [currentState, setCurrentState] = useState<Partial<MarketingPlanState> | null>(null);
 
@@ -135,14 +141,13 @@ export default function SaasMarketingAgent() {
         if (response.ok) {
           setCurrentState(data.current_state as MarketingPlanState);
           if (data.status === AgentStatus.COMPLETED || data.status === AgentStatus.ERROR) {
-              setResult(data.current_state as MarketingPlanState);
-              setRunId(null); 
-              setLoading(false);
-              if (data.status === AgentStatus.ERROR) {
-                setError("An Error has occured, the agent did not complete.");
-              }
+            setResult(data.current_state as MarketingPlanState);
+            setLoading(false);
+            // Don't clear runId to keep the shareable link
+            if (data.status === AgentStatus.ERROR) {
+              setError("An Error has occurred, the agent did not complete.");
             }
-          else {
+          } else {
             // Schedule next poll 5 seconds after this response
             timeoutId = setTimeout(pollStatus, 5000);
           }
@@ -158,6 +163,9 @@ export default function SaasMarketingAgent() {
     };
 
     if (runId && loading) {
+      // Create shareable link when polling starts
+      const baseUrl = window.location.origin;
+      setShareableLink(`${baseUrl}${pathname}?jobid=${runId}`);
       pollStatus();
     }
 
@@ -166,7 +174,7 @@ export default function SaasMarketingAgent() {
         clearTimeout(timeoutId);
       }
     };
-  }, [runId, loading]);
+  }, [runId, loading, pathname]);
 
   const handleSampleClick = (sampleData: typeof formData) => {
     setFormData(sampleData);
@@ -174,6 +182,7 @@ export default function SaasMarketingAgent() {
     setError("");
     setResult(null);
     setCurrentState(null);
+    setShareableLink("");
     
     fetch("/api/marketing-agent/start", {
       method: "POST",
@@ -186,6 +195,9 @@ export default function SaasMarketingAgent() {
       const data: AgentState = await response.json();
       if (response.ok && data.run_id) {
         setRunId(data.run_id);
+        // Create shareable link with the run_id
+        const baseUrl = window.location.origin;
+        setShareableLink(`${baseUrl}${pathname}?jobid=${data.run_id}`);
       } else {
         setError((data as any).error || "Failed to start marketing agent");
         setLoading(false);
@@ -204,6 +216,7 @@ export default function SaasMarketingAgent() {
     setError("");
     setResult(null);
     setCurrentState(null);
+    setShareableLink("");
     
     try {
       const response = await fetch("/api/marketing-agent/start", {
@@ -217,6 +230,9 @@ export default function SaasMarketingAgent() {
       const data: AgentState = await response.json();
       if (response.ok && data.run_id) {
         setRunId(data.run_id);
+        // Create shareable link with the run_id
+        const baseUrl = window.location.origin;
+        setShareableLink(`${baseUrl}${pathname}?jobid=${data.run_id}`);
       } else {
         setError((data as any).error || "Failed to start marketing agent");
         setLoading(false);
@@ -320,6 +336,31 @@ export default function SaasMarketingAgent() {
 
       {loading && <LoadingMessage currentState={currentState} />}
 
+      {shareableLink && (
+        <div className="mb-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded">
+          <h3 className="font-medium mb-2">Shareable Link</h3>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={shareableLink}
+              readOnly
+              className="flex-1 p-2 bg-white dark:bg-slate-800 border rounded"
+            />
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(shareableLink);
+              }}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Copy
+            </button>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            Save this link to check the results later
+          </p>
+        </div>
+      )}
+
       {result && (
         <div className="mt-6 space-y-6">
           <CompletedSection title="App Overview">
@@ -371,8 +412,6 @@ export default function SaasMarketingAgent() {
               </div>
             </CompletedSection>
           )}
-
-
 
           {result.keywords?.length > 0 && (
             <CompletedSection title="Keywords">
