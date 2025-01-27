@@ -2,6 +2,7 @@
 
 import AgentPage, { CompletedSection } from '@/app/components/agent/AgentPage';
 import type { TeamRosterState, Team, Player } from "@/utils/team-roster-client/types";
+import { Suspense } from 'react';
 import ReactMarkdown from "react-markdown";
 
 const SAMPLE_SEARCHES = [
@@ -132,6 +133,7 @@ const renderLoadingState = (currentState: Partial<TeamRosterState>) => {
 
 export default function TeamRosterAgent() {
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <AgentPage
       agentName="Team Roster Agent"
       sampleSearches={SAMPLE_SEARCHES}
@@ -139,5 +141,6 @@ export default function TeamRosterAgent() {
       renderResults={renderResults}
       renderLoadingState={renderLoadingState}
     />
+    </Suspense>
   );
 } 

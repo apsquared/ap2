@@ -2,6 +2,7 @@
 
 import AgentPage, { CompletedSection } from '@/app/components/agent/AgentPage';
 import type { CollegeFinderState, College } from "@/utils/college-agent/type";
+import { Suspense } from 'react';
 import ReactMarkdown from "react-markdown";
 
 const SAMPLE_SEARCHES = [
@@ -207,6 +208,8 @@ const renderLoadingState = (currentState: Partial<CollegeFinderState>) => {
 
 export default function CollegeFinderAgent() {
   return (
+    <Suspense fallback={<div>Loading...</div>}>
+
     <AgentPage
       agentName="College Finder Agent"
       sampleSearches={SAMPLE_SEARCHES}
@@ -214,5 +217,6 @@ export default function CollegeFinderAgent() {
       renderResults={renderResults}
       renderLoadingState={renderLoadingState}
     />
+    </Suspense>
   );
 } 
