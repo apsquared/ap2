@@ -1,3 +1,4 @@
+import { AgentState, AgentStatus } from "../agentclient/schema/schema";
 
 export interface College {
     name: string;                   // Name of the college
@@ -23,9 +24,15 @@ export interface CollegeFinderInput {
     sat_score?: number;            // average SAT score
 }
 
-export interface CollegeFinderState extends CollegeFinderInput {
-    search_query: string;          // Constructed search query
-    colleges: College[];           // Found colleges matching criteria
-    recommendations: string[];     // Specific recommendations for the user
-    data_gathering_attempts: number; // Counter for data gathering attempts
+export interface CollegeFinderState extends AgentState {
+    run_id: string;
+    thread_id: string;
+    status: AgentStatus;
+    start_time: Date;
+    last_update: Date;
+    current_state: Record<string, any>;
+    search_query: string;
+    colleges: College[];
+    recommendations: string[];
+    data_gathering_attempts: number;
 }

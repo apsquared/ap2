@@ -209,13 +209,14 @@ const renderLoadingState = (currentState: Partial<CollegeFinderState>) => {
 export default function CollegeFinderAgent() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-
-    <AgentPage
-      agentName="College Finder Agent"
+    <AgentPage<CollegeFinderState>
+      agentName="college-finder-agent"
       sampleSearches={SAMPLE_SEARCHES}
       formFields={FORM_FIELDS}
-      renderResults={renderResults}
-      renderLoadingState={renderLoadingState}
+      children={{
+        renderResults,
+        renderLoadingState
+      }}
     />
     </Suspense>
   );

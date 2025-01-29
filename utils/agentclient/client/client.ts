@@ -57,7 +57,7 @@ export class AgentClient {
     });
 
 
-
+    console.log("AgentClient initialized with baseUrl complete:", this.baseUrl);
   }
 
   private getHeaders(): Record<string, string> {

@@ -10,7 +10,7 @@ export interface SampleSearch {
     formData: Record<string, any>;
 }
 
-interface AgentPageProps {
+interface AgentPageProps<T extends AgentState> {
     agentName: string;
     sampleSearches: SampleSearch[];
     formFields: Array<{
@@ -19,8 +19,10 @@ interface AgentPageProps {
         type?: string;
         placeholder?: string;
     }>;
-    renderResults: (state: any) => React.ReactNode;
-    renderLoadingState?: (currentState: any) => React.ReactNode;
+    children: {
+        renderResults: (state: T) => JSX.Element;
+        renderLoadingState?: (currentState: T) => JSX.Element;
+    };
 }
 
 export const CompletedSection = ({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) => (
@@ -32,24 +34,25 @@ export const CompletedSection = ({ title, children, className = "" }: { title: s
     </div>
 );
 
-export default function AgentPage({
+export default function AgentPage<T extends AgentState>({
     agentName,
     sampleSearches,
     formFields,
-    renderResults,
-    renderLoadingState
-}: AgentPageProps) {
+    children: {
+        renderResults,
+        renderLoadingState
+    }
+}: AgentPageProps<T>) {
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [runId, setRunId] = useState<string | null>(null);
-    const [agentState, setAgentState] = useState<AgentState | null>(null);
+    const [agentState, setAgentState] = useState<T | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        let timeoutId: NodeJS.Timeout;
-        let isPolling = true;
+        let pollInterval: NodeJS.Timeout;
 
         const pollStatus = async () => {
-            if (!runId || !isPolling) return;
+            if (!runId) return;
 
             try {
                 const response = await fetch(`/api/${agentName}/status/${runId}`);
@@ -58,26 +61,22 @@ export default function AgentPage({
                 setAgentState(data);
 
                 if (data.status !== AgentStatus.RUNNING) {
-                    isPolling = false;
-                    return;
+                    clearInterval(pollInterval);
                 }
-
-                // Schedule next poll after response is received
-                timeoutId = setTimeout(pollStatus, 10000);
             } catch (error) {
                 console.error('Error polling status:', error);
-                isPolling = false;
+                clearInterval(pollInterval);
             }
         };
 
         if (runId) {
+            pollInterval = setInterval(pollStatus, 10000);
             pollStatus();
         }
 
         return () => {
-            isPolling = false;
-            if (timeoutId) {
-                clearTimeout(timeoutId);
+            if (pollInterval) {
+                clearInterval(pollInterval);
             }
         };
     }, [runId, agentName]);
@@ -168,6 +167,7 @@ export default function AgentPage({
 
             {agentState?.status === AgentStatus.COMPLETED && agentState && (
                 <div>
+                    Results:
                     {renderResults(agentState)}
                 </div>
             )}

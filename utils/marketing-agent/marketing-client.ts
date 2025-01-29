@@ -1,14 +1,18 @@
 import { AgentClient } from "../agentclient/client/client";
 import { AgentState } from "../agentclient/schema/schema";
-import { MarketingInput } from "./types";
+import { MarketingInput, MarketingPlanState } from "./types";
 
+export interface MarketingAgentState extends AgentState {
+    current_state: MarketingPlanState;
+}
 
 const baseUrl = process.env.AGENT_BASE_URL || 'http://localhost:8123';
 
 const MARKETING_AGENT = 'marketing-agent'; 
+const client = new AgentClient(baseUrl, MARKETING_AGENT,40000, true);
 
-export async function startMarketingAgent(input: MarketingInput):Promise<AgentState> {
-    const client = new AgentClient(baseUrl, MARKETING_AGENT,30000, true);
+export async function startMarketingAgent(input: MarketingInput):Promise<MarketingAgentState> {
+    
     await client.updateAgent(MARKETING_AGENT);
 
 try {
@@ -25,16 +29,18 @@ try {
         );
         
         console.log('Run started with ID:', startResponse.run_id);
-        return startResponse;
+        return startResponse as MarketingAgentState;
     } catch (error) {
         console.error('Error starting agent run:', error);
         throw error;
     }
 }
 
-export async function getMarketingAgentStatus(runId: string):Promise<AgentState> {
-    const client = new AgentClient(baseUrl, MARKETING_AGENT,30000, true);
+export async function getMarketingAgentStatus(runId: string):Promise<MarketingAgentState> {
+
+    console.log("getMarketingAgentStatus", runId);
     await client.updateAgent(MARKETING_AGENT);
-    
-    return await client.getRunStatus(runId);
+    console.log("Calling getRunStatus");
+
+    return await client.getRunStatus(runId) as MarketingAgentState;
 }

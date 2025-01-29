@@ -134,13 +134,15 @@ const renderLoadingState = (currentState: Partial<TeamRosterState>) => {
 export default function TeamRosterAgent() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-    <AgentPage
-      agentName="Team Roster Agent"
-      sampleSearches={SAMPLE_SEARCHES}
-      formFields={FORM_FIELDS}
-      renderResults={renderResults}
-      renderLoadingState={renderLoadingState}
-    />
+      <AgentPage<TeamRosterState>
+        agentName="team-roster-agent"
+        sampleSearches={SAMPLE_SEARCHES}
+        formFields={FORM_FIELDS}
+        children={{
+          renderResults,
+          renderLoadingState
+        }}
+      />
     </Suspense>
   );
 } 
