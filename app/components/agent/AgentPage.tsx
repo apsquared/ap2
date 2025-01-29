@@ -45,10 +45,11 @@ export default function AgentPage({
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        let pollInterval: NodeJS.Timeout;
+        let timeoutId: NodeJS.Timeout;
+        let isPolling = true;
 
         const pollStatus = async () => {
-            if (!runId) return;
+            if (!runId || !isPolling) return;
 
             try {
                 const response = await fetch(`/api/${agentName}/status/${runId}`);
@@ -57,22 +58,26 @@ export default function AgentPage({
                 setAgentState(data);
 
                 if (data.status !== AgentStatus.RUNNING) {
-                    clearInterval(pollInterval);
+                    isPolling = false;
+                    return;
                 }
+
+                // Schedule next poll after response is received
+                timeoutId = setTimeout(pollStatus, 10000);
             } catch (error) {
                 console.error('Error polling status:', error);
-                clearInterval(pollInterval);
+                isPolling = false;
             }
         };
 
         if (runId) {
-            pollInterval = setInterval(pollStatus, 10000);
             pollStatus();
         }
 
         return () => {
-            if (pollInterval) {
-                clearInterval(pollInterval);
+            isPolling = false;
+            if (timeoutId) {
+                clearTimeout(timeoutId);
             }
         };
     }, [runId, agentName]);
