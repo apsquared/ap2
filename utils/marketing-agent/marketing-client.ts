@@ -35,5 +35,6 @@ try {
 export async function getMarketingAgentStatus(runId: string):Promise<AgentState> {
     const client = new AgentClient(baseUrl, MARKETING_AGENT,30000, true);
     await client.updateAgent(MARKETING_AGENT);
+    
     return await client.getRunStatus(runId);
 }

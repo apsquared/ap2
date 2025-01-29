@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getMarketingAgentStatus } from '@/utils/marketing-agent/marketing-client';
 
-export const maxDuration = 30;
+export const maxDuration = 45;
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +11,7 @@ export async function GET(
     { params }: { params: { runId: string } }
 ) {
     try {
+        console.log("Getting marketing agent status for runId:", params.runId);
         const status = await getMarketingAgentStatus(params.runId);
         console.log("Agent status:", JSON.stringify(status, null, 2));
         return NextResponse.json(status);
