@@ -66,7 +66,7 @@ export default function AgentPage({
         };
 
         if (runId) {
-            pollInterval = setInterval(pollStatus, 1000);
+            pollInterval = setInterval(pollStatus, 5000);
             pollStatus();
         }
 
