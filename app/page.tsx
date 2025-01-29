@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
     <div className="mt-5 mb-3 text-lg">
-      Welcome to APSquared where we talk about the fun tools we create while we #buildinpublic.  
+      Welcome to APSquared where we talk about the fun tools we create while we #buildinpublic. Test  
     </div>
     <div className="prose dark:prose-invert">
       <h1 className="text-2xl mt-10">Posts by APSquared:</h1>
