@@ -10,7 +10,7 @@ export class BaseAgentClient {
     protected agentName: string;
 
     constructor(agentName: string) {
-        const baseUrl = process.env.AGENT_BASE_URL || 'http://localhost:8123';
+        const baseUrl = /*process.env.AGENT_BASE_URL ||*/ 'http://localhost:8123';
         this.agentName = agentName;
         this.client = new AgentClient(baseUrl, agentName, 30000, true);
     }
@@ -36,7 +36,10 @@ export class BaseAgentClient {
     }
 
     async getStatus(runId: string): Promise<AgentState> {
+        console.log("---Status request for runId:", runId);
         await this.client.updateAgent(this.agentName);
-        return await this.client.getRunStatus(runId);
+        const response = await this.client.getRunStatus(runId);
+        console.log("---Status response:", JSON.stringify(response, null, 2));
+        return response;
     }
 } 

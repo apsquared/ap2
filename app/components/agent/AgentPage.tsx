@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { AgentState, AgentStatus } from "@/utils/agentclient/schema/schema";
 import ReactMarkdown from "react-markdown";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export interface SampleSearch {
     title: string;
@@ -18,6 +19,7 @@ interface AgentPageProps<T extends AgentState> {
         label: string;
         type?: string;
         placeholder?: string;
+        optional?: boolean;
     }>;
     children: {
         renderResults: (state: T) => JSX.Element;
@@ -43,10 +45,20 @@ export default function AgentPage<T extends AgentState>({
         renderLoadingState
     }
 }: AgentPageProps<T>) {
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [runId, setRunId] = useState<string | null>(null);
     const [agentState, setAgentState] = useState<T | null>(null);
     const [error, setError] = useState<string | null>(null);
+
+    // Initialize runId from URL parameters
+    useEffect(() => {
+        const urlRunId = searchParams.get('runId');
+        if (urlRunId && !runId) {
+            setRunId(urlRunId);
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         let pollInterval: NodeJS.Timeout;
@@ -139,8 +151,8 @@ export default function AgentPage<T extends AgentState>({
                             value={formData[field.name] || ''}
                             onChange={(e) => setFormData(prev => ({ ...prev, [field.name]: e.target.value }))}
                             placeholder={field.placeholder}
+                            required={!field.optional}
                             className="w-full p-2 border rounded"
-                            required
                         />
                     </div>
                 ))}
@@ -156,6 +168,18 @@ export default function AgentPage<T extends AgentState>({
             {error && (
                 <div className="text-red-500 mb-4">
                     {error}
+                </div>
+            )}
+
+            {runId && (
+                <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900 rounded">
+                    <p className="mb-2">Bookmark this link to return to your results later:</p>
+                    <a 
+                        href={`${pathname}?runId=${runId}`}
+                        className="text-blue-600 dark:text-blue-400 hover:underline break-all"
+                    >
+                        {`${pathname}?runId=${runId}`}
+                    </a>
                 </div>
             )}
 

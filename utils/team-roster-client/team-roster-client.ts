@@ -1,6 +1,5 @@
 import { BaseAgentClient } from "../agentclient/base-agent-client";
-import { AgentState } from "../agentclient/schema/schema";
-import { RosterAgentInput } from "./types";
+import { RosterAgentInput, TeamRosterAgentState } from "./types";
 
 const TEAM_ROSTER_AGENT = 'team-roster-agent';
 
@@ -9,12 +8,14 @@ export class TeamRosterClient extends BaseAgentClient {
         super(TEAM_ROSTER_AGENT);
     }
 
-    async startTeamRosterAgent(input: RosterAgentInput): Promise<AgentState> {
-        return this.startAgent(input);
+    async startTeamRosterAgent(input: RosterAgentInput): Promise<TeamRosterAgentState> {
+        const response = await this.startAgent(input);
+        return response as TeamRosterAgentState;
     }
 
-    async getTeamRosterAgentStatus(runId: string): Promise<AgentState> {
-        return this.getStatus(runId);
+    async getTeamRosterAgentStatus(runId: string): Promise<TeamRosterAgentState> {
+        const response = await this.getStatus(runId);
+        return response as TeamRosterAgentState;
     }
 }
 

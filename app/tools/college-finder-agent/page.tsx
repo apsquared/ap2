@@ -1,9 +1,8 @@
 "use client";
 
 import AgentPage, { CompletedSection } from '@/app/components/agent/AgentPage';
-import type { CollegeFinderState, College } from "@/utils/college-agent/type";
+import type { CollegeFinderAgentState, CollegeFinderPlanState, College } from "@/utils/college-agent/type";
 import { Suspense } from 'react';
-import ReactMarkdown from "react-markdown";
 
 const SAMPLE_SEARCHES = [
   {
@@ -36,38 +35,47 @@ const SAMPLE_SEARCHES = [
 ];
 
 const FORM_FIELDS = [
+{
+    name: "location_preference",
+    label: "Location Preference",
+    placeholder: "Enter preferred location",
+    },
+    {
+        name:'search_query', 
+        label:'Search Query', 
+        placeholder:'Enter a description of the college you are looking for'
+    },
   {
     name: "major",
     label: "Major/Field of Study",
     placeholder: "Enter desired major",
-  },
-  {
-    name: "location_preference",
-    label: "Location Preference",
-    placeholder: "Enter preferred location",
+    optional: true,
   },
   {
     name: "max_tuition",
     label: "Maximum Tuition (USD/year)",
     type: "number",
     placeholder: "Enter maximum tuition",
+    optional: true,
   },
   {
     name: "min_acceptance_rate",
     label: "Minimum Acceptance Rate (%)",
     type: "number",
     placeholder: "Enter minimum acceptance rate",
+    optional: true,
   },
   {
     name: "sat_score",
     label: "SAT Score",
     type: "number",
     placeholder: "Enter your SAT score",
+    optional: true,
   }
 ];
 
-const renderResults = (state: CollegeFinderState) => {
-  const { colleges, recommendations } = state;
+const renderResults = (state: CollegeFinderAgentState) => {
+  const { colleges, recommendations } = state.current_state;
 
   return (
     <div className="space-y-8">
@@ -143,12 +151,12 @@ const renderResults = (state: CollegeFinderState) => {
 };
 
 interface TaskDefinition {
-  key: keyof CollegeFinderState;
+  key: keyof CollegeFinderPlanState;
   label: string;
   checkEmpty?: boolean;
 }
 
-const renderLoadingState = (currentState: Partial<CollegeFinderState>) => {
+const renderLoadingState = (currentState: Partial<CollegeFinderAgentState>) => {
   const completedTasks: string[] = [];
   const pendingTasks: string[] = [];
   
@@ -160,14 +168,14 @@ const renderLoadingState = (currentState: Partial<CollegeFinderState>) => {
 
   tasks.forEach(task => {
     if (task.checkEmpty) {
-      const value = currentState[task.key];
+      const value = currentState.current_state?.[task.key];
       if (Array.isArray(value) && value.length > 0) {
         completedTasks.push(task.label);
       } else {
         pendingTasks.push(task.label);
       }
     } else {
-      if (currentState[task.key]) {
+      if (currentState.current_state?.[task.key]) {
         completedTasks.push(task.label);
       } else {
         pendingTasks.push(task.label);
@@ -209,8 +217,8 @@ const renderLoadingState = (currentState: Partial<CollegeFinderState>) => {
 export default function CollegeFinderAgent() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-    <AgentPage<CollegeFinderState>
-      agentName="college-finder-agent"
+    <AgentPage<CollegeFinderAgentState>
+      agentName="college-agent"
       sampleSearches={SAMPLE_SEARCHES}
       formFields={FORM_FIELDS}
       children={{

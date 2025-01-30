@@ -1,3 +1,5 @@
+import { AgentState } from "../agentclient/schema/schema";
+
 /**
  * Represents a user persona with name and description
  */
@@ -46,3 +48,6 @@ export interface Persona {
     search_results: any[];
   }
   
+  export interface MarketingAgentState extends AgentState {
+    current_state: MarketingPlanState;
+}

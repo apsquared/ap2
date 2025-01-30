@@ -1,10 +1,7 @@
 import { BaseAgentClient } from "../agentclient/base-agent-client";
-import { AgentState } from "../agentclient/schema/schema";
-import { MarketingInput, MarketingPlanState } from "./types";
+import { MarketingAgentState, MarketingInput, MarketingPlanState } from "./types";
 
-export interface MarketingAgentState extends AgentState {
-    current_state: MarketingPlanState;
-}
+
 
 const MARKETING_AGENT = 'marketing-agent';
 

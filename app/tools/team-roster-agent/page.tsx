@@ -1,7 +1,7 @@
 "use client";
 
 import AgentPage, { CompletedSection } from '@/app/components/agent/AgentPage';
-import type { TeamRosterState, Team, Player } from "@/utils/team-roster-client/types";
+import type { TeamRosterAgentState, Team, Player, TeamRosterPlanState } from "@/utils/team-roster-client/types";
 import { Suspense } from 'react';
 import ReactMarkdown from "react-markdown";
 
@@ -37,8 +37,8 @@ const FORM_FIELDS = [
   }
 ];
 
-const renderResults = (state: TeamRosterState) => {
-  const { team, summary } = state;
+const renderResults = (state: TeamRosterAgentState) => {
+  const { team, summary } = state.current_state;
 
   return (
     <div className="space-y-8">
@@ -68,12 +68,12 @@ const renderResults = (state: TeamRosterState) => {
 };
 
 interface TaskDefinition {
-  key: keyof TeamRosterState;
+  key: keyof TeamRosterPlanState;
   label: string;
   checkEmpty?: boolean;
 }
 
-const renderLoadingState = (currentState: Partial<TeamRosterState>) => {
+const renderLoadingState = (currentState: Partial<TeamRosterAgentState>) => {
   const completedTasks: string[] = [];
   const pendingTasks: string[] = [];
   
@@ -85,14 +85,14 @@ const renderLoadingState = (currentState: Partial<TeamRosterState>) => {
 
   tasks.forEach(task => {
     if (task.checkEmpty) {
-      const value = currentState[task.key];
+      const value = currentState.current_state?.[task.key];
       if (value && (value as Team)?.players?.length > 0) {
         completedTasks.push(task.label);
       } else {
         pendingTasks.push(task.label);
       }
     } else {
-      if (currentState[task.key]) {
+      if (currentState.current_state?.[task.key]) {
         completedTasks.push(task.label);
       } else {
         pendingTasks.push(task.label);
@@ -134,7 +134,7 @@ const renderLoadingState = (currentState: Partial<TeamRosterState>) => {
 export default function TeamRosterAgent() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <AgentPage<TeamRosterState>
+      <AgentPage<TeamRosterAgentState>
         agentName="team-roster-agent"
         sampleSearches={SAMPLE_SEARCHES}
         formFields={FORM_FIELDS}

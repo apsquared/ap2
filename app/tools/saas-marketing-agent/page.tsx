@@ -1,8 +1,7 @@
 "use client";
 
 import AgentPage, { CompletedSection } from '@/app/components/agent/AgentPage';
-import { MarketingAgentState } from '@/utils/marketing-agent/marketing-client';
-import type { Persona, Competitor, MarketingPlanState } from "@/utils/marketing-agent/types";
+import type { Persona, Competitor, MarketingPlanState, MarketingAgentState } from "@/utils/marketing-agent/types";
 import { Suspense } from 'react';
 import ReactMarkdown from "react-markdown";
 

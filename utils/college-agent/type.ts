@@ -24,15 +24,19 @@ export interface CollegeFinderInput {
     sat_score?: number;            // average SAT score
 }
 
-export interface CollegeFinderState extends AgentState {
-    run_id: string;
-    thread_id: string;
-    status: AgentStatus;
-    start_time: Date;
-    last_update: Date;
-    current_state: Record<string, any>;
+export interface CollegeFinderPlanState {
+    major: string | null;
+    location_preference: string | null;
+    max_tuition: number | null;
+    min_acceptance_rate: number | null;
+    max_colleges: number;
     search_query: string;
+    sat_score: number | null;
     colleges: College[];
     recommendations: string[];
     data_gathering_attempts: number;
+}
+
+export interface CollegeFinderAgentState extends AgentState {
+    current_state: CollegeFinderPlanState;
 }

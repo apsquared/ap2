@@ -20,15 +20,13 @@ export interface RosterAgentInput {
     college_name: string;
 }
 
-export interface TeamRosterState extends AgentState {
-    run_id: string;
-    thread_id: string;
-    status: AgentStatus;
-    start_time: Date;
-    last_update: Date;
-    current_state: Record<string, any>;
+export interface TeamRosterPlanState {
     college_name: string;
     roster_url: string | null;
     team: Team | null;
     summary: string | null;
+}
+
+export interface TeamRosterAgentState extends AgentState {
+    current_state: TeamRosterPlanState;
 }
