@@ -233,11 +233,12 @@ export default function SaasMarketingAgent() {
         agentName="marketing-agent"
         sampleSearches={SAMPLE_SEARCHES}
         formFields={FORM_FIELDS}
-        children={{
+        >
+        {{
           renderResults,
           renderLoadingState
         }}
-      />
+      </AgentPage>
     </Suspense>
   );
 }

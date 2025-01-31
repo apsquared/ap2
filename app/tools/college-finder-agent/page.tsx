@@ -221,11 +221,12 @@ export default function CollegeFinderAgent() {
       agentName="college-agent"
       sampleSearches={SAMPLE_SEARCHES}
       formFields={FORM_FIELDS}
-      children={{
-        renderResults,
-        renderLoadingState
-      }}
-    />
+      >
+        {{
+          renderResults,
+          renderLoadingState
+        }}
+      </AgentPage>
     </Suspense>
   );
 } 
