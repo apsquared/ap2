@@ -36,6 +36,30 @@ export const CompletedSection = ({ title, children, className = "" }: { title: s
     </div>
 );
 
+const LoadingIndicator = () => (
+    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
+        <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+        <span>Agent is working...</span>
+    </div>
+);
+
+const StatusUpdates = ({ updates, isRunning }: { updates: string[], isRunning: boolean }) => (
+    <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-2">Status Updates</h2>
+        {isRunning && <LoadingIndicator />}
+        <div className="space-y-2">
+            {updates.map((update, index) => (
+                <div 
+                    key={index} 
+                    className="p-3 bg-gray-50 dark:bg-slate-800 rounded border border-gray-200 dark:border-gray-700"
+                >
+                    <ReactMarkdown>{update}</ReactMarkdown>
+                </div>
+            ))}
+        </div>
+    </div>
+);
+
 export default function AgentPage<T extends AgentState>({
     agentName,
     sampleSearches,
@@ -181,6 +205,13 @@ export default function AgentPage<T extends AgentState>({
                         {`${pathname}?runId=${runId}`}
                     </a>
                 </div>
+            )}
+
+            {agentState?.status_updates && agentState.status_updates.length > 0 && (
+                <StatusUpdates 
+                    updates={agentState.status_updates} 
+                    isRunning={agentState.status === AgentStatus.RUNNING} 
+                />
             )}
 
             {agentState?.status === AgentStatus.RUNNING && renderLoadingState && agentState && (

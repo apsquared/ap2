@@ -162,9 +162,12 @@ export default function YourAgent() {
             description="Description of what your agent does"
             apiEndpoint="/api/your-agent-name"
             sampleSearches={SAMPLE_SEARCHES}
-            renderResults={renderResults}
-            renderLoadingState={renderLoadingState}
-        />
+      >
+        {{
+          renderResults,
+          renderLoadingState
+        }}
+      </AgentPage>
     );
 }
 ```
