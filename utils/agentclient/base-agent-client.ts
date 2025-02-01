@@ -10,7 +10,7 @@ export class BaseAgentClient {
     protected agentName: string;
 
     constructor(agentName: string) {
-        const baseUrl = /*process.env.AGENT_BASE_URL ||*/ 'http://localhost:8123';
+        const baseUrl = process.env.AGENT_BASE_URL || 'http://localhost:8123';
         this.agentName = agentName;
         this.client = new AgentClient(baseUrl, agentName, 30000, true);
     }

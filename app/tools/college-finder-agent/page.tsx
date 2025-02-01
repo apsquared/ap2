@@ -219,6 +219,7 @@ export default function CollegeFinderAgent() {
     <Suspense fallback={<div>Loading...</div>}>
     <AgentPage<CollegeFinderAgentState>
       agentName="college-agent"
+      agentDisplayName="College Finder Agent"
       sampleSearches={SAMPLE_SEARCHES}
       formFields={FORM_FIELDS}
       >

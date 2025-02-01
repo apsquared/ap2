@@ -231,6 +231,7 @@ export default function SaasMarketingAgent() {
     <Suspense fallback={<div>Loading...</div>}>
       <AgentPage<MarketingAgentState>
         agentName="marketing-agent"
+        agentDisplayName="SaaS Marketing Agent"
         sampleSearches={SAMPLE_SEARCHES}
         formFields={FORM_FIELDS}
         >

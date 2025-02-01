@@ -135,6 +135,7 @@ export default function TeamRosterAgent() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <AgentPage<TeamRosterAgentState>
+        agentDisplayName="College Baseball Roster Agent"
         agentName="team-roster-agent"
         sampleSearches={SAMPLE_SEARCHES}
         formFields={FORM_FIELDS}
