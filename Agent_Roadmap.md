@@ -2,6 +2,7 @@
 
 This is a list of features I would like to add to our [agent "framework"](https://www.apsquared.co/full-stack-ai-agents).
 
+- [ ] Add Source Link / Graph image to agent pages (in progress)
 - [ ] Save Results to DB (in progress)
 - [ ] Retrieve Results from DB 
 - [ ] Recent Results
