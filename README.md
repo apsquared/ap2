@@ -4,6 +4,8 @@ The APSquared site provides AI-powered tools to help users with various tasks. T
 
 [Visit APSquared.co](https://www.apsquared.co/tools) to test out the agents.
 
+Read more about how to build full stack AI agents using NextJS and LangGraph in our [blog post](https://apsquared.co/posts/full-stack-ai-agents).
+
 ## Adding a New Agent
 
 To add a new agent follow these steps (assuming you have deployed the agents):
