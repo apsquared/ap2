@@ -1,0 +1,203 @@
+---
+title: Full Stack AI Agents NextJS and LangGraph
+description: Learn how to build full stack AI agents using NextJS and LangGraph with source code
+date: "2025-02-01"
+image: https://camo.githubusercontent.com/4c0599f1a6ea00f6016eb297bc5eb0c8739dfba77afb50102c0ec10182355ae7/68747470733a2f2f6170737175617265642e636f2f6167656e745f617263682e706e67
+---
+
+# Building Full Stack AI Agents with LangGraph and NextJS
+
+Most tutorials about building AI agents focus solely on the backend implementation or provide simplified examples. In this post, we'll explore how to build production-ready full stack AI agents using LangGraph and NextJS, drawing from two real-world example projects:
+
+- [LG-Agents](https://github.com/apsquared/lg-agents) - Backend implementation using LangGraph
+- [AP2](https://github.com/apsquared/ap2) - Frontend implementation using NextJS
+
+## Why Full Stack Agents?
+
+While many tutorials demonstrate how to build AI agents using frameworks like LangChain or LangGraph, they often miss crucial aspects of production applications:
+
+1. User Interface - How users interact with the agent
+2. State Management - How to track and update agent progress
+3. Asynchronous Processing - Handling long-running agent tasks
+4. Error Handling - Gracefully managing failures
+5. Result Persistence - Saving and retrieving agent results
+
+## Architecture Overview
+
+The solution consists of two main components:
+
+### Backend (LangGraph Agents)
+
+The backend service implements the actual agent logic using LangGraph. Each agent is defined as a state machine with:
+
+- Clear input/output types
+- State management
+- Progress tracking
+- Error handling
+- Asynchronous execution
+
+### Frontend (NextJS Application)
+
+The frontend provides:
+
+- Clean user interface for agent interaction
+- Real-time status updates
+- Result visualization
+- Error handling
+- Shareable results via URLs
+
+![Architecture Overview](https://camo.githubusercontent.com/4c0599f1a6ea00f6016eb297bc5eb0c8739dfba77afb50102c0ec10182355ae7/68747470733a2f2f6170737175617265642e636f2f6167656e745f617263682e706e67)
+
+
+## Implementation Details
+
+### Backend Agent Structure
+
+Each agent follows a consistent pattern:
+
+1. Define Types:
+```typescript
+export interface AgentInput {
+    // Input parameters
+}
+
+export interface AgentState extends BaseState {
+    // Agent-specific state
+    results?: any[];
+    status?: string;
+}
+```
+
+2. Create Agent Client:
+```typescript
+export class AgentClient extends BaseAgentClient {
+    constructor() {
+        super(AGENT_NAME);
+    }
+
+    async startAgent(input: AgentInput): Promise<AgentState> {
+        const response = await this.startAgent(input);
+        return response as AgentState;
+    }
+
+    async getStatus(runId: string): Promise<AgentState> {
+        const response = await this.getStatus(runId);
+        return response as AgentState;
+    }
+}
+```
+
+### Frontend Implementation
+
+The frontend uses a reusable pattern for all agents:
+
+1. API Routes:
+```typescript
+// start/route.ts
+export async function POST(request: Request) {
+    const body = await request.json();
+    try {
+        const response = await agentClient.startAgent(body);
+        return NextResponse.json(response);
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to start agent' }, { status: 500 });
+    }
+}
+
+// status/[runId]/route.ts
+export async function GET(
+    request: Request,
+    { params }: { params: { runId: string } }
+) {
+    try {
+        const response = await agentClient.getStatus(params.runId);
+        return NextResponse.json(response);
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to get status' }, { status: 500 });
+    }
+}
+```
+
+2. Reusable Agent Page Component:
+```typescript
+export default function AgentPage<T extends AgentState>({
+    agentName,
+    agentDisplayName,
+    sampleSearches,
+    formFields,
+    children: {
+        renderResults,
+        renderLoadingState
+    }
+}: AgentPageProps<T>) {
+    // State management
+    const [runId, setRunId] = useState<string | null>(null);
+    const [agentState, setAgentState] = useState<T | null>(null);
+
+    // Status polling
+    useEffect(() => {
+        if (runId) {
+            const pollInterval = setInterval(async () => {
+                const response = await fetch(`/api/${agentName}/status/${runId}`);
+                const data = await response.json();
+                setAgentState(data);
+                
+                if (data.status !== "running") {
+                    clearInterval(pollInterval);
+                }
+            }, 10000);
+
+            return () => clearInterval(pollInterval);
+        }
+    }, [runId]);
+
+    // ... form handling and rendering
+}
+```
+
+## Key Features
+
+1. **Asynchronous Execution**: Agents run asynchronously with progress updates
+2. **State Management**: Clear state transitions and progress tracking
+3. **Error Handling**: Graceful error handling at all levels
+4. **Result Persistence**: Results accessible via unique URLs
+5. **Reusable Components**: Common patterns extracted into reusable components
+6. **Type Safety**: Full TypeScript support throughout the stack
+
+## Example Agents
+
+Check out our [example agents](https://www.apsquared.co/tools):
+
+1. College Finder Agent - Helps find colleges based on criteria
+2. Team Roster Agent - Generates optimized sports team rosters
+3. Marketing Agent - Creates marketing plans for SaaS products
+
+Each agent demonstrates different aspects of the framework while following the same architectural patterns.
+
+## Getting Started
+
+To create your own agent:
+
+1. Define your agent types (input/state)
+2. Implement the agent logic using LangGraph
+3. Create an agent client extending BaseAgentClient
+4. Add API routes for start/status
+5. Create a frontend page using the AgentPage component
+6. Implement result rendering logic
+
+## Conclusion
+
+Building full stack AI agents requires more than just the agent logic. This architecture provides a solid foundation for production-ready applications with:
+
+- Clean separation of concerns
+- Reusable patterns
+- Type safety
+- Error handling
+- User-friendly interfaces
+
+The example repositories demonstrate these patterns in action with real-world agents.
+
+Check out the repositories for complete examples:
+- Backend: [LG-Agents](https://github.com/apsquared/lg-agents)
+- Frontend: [AP2](https://github.com/apsquared/ap2)
+
