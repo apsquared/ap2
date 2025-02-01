@@ -56,6 +56,7 @@ const renderResults = (state: TeamRosterAgentState) => {
                 <h3 className="font-semibold">{player.name}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {player.position} • {player.height}
+                  {player.velocity && ` • ${player.velocity} mph`}
                 </p>
                 <p className="text-sm">{player.hometown}</p>
               </div>
