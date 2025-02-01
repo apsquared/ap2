@@ -209,7 +209,7 @@ export default function AgentPage<T extends AgentState>({
                 </div>
             )}
 
-            {agentState?.status_updates && agentState.status_updates.length > 0 && (
+            {agentState?.status_updates  && (
                 <StatusUpdates 
                     updates={agentState.status_updates} 
                     isRunning={agentState.status === AgentStatus.RUNNING} 
