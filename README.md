@@ -1,12 +1,12 @@
 # APSquared Site
 
-The APSquared site provides AI-powered tools to help users with various tasks. The site is built using Next.js and uses a modular agent-based architecture.
+The APSquared site provides AI-powered tools to help users with various tasks. The site is built using Next.js and acts as a frontend for the agent service.  To learn more about the agent service, see the [agent-service](https://github.com/apsquared/lg-agents) repository.
 
-[Visit APSquared.co](https://www.apsquared.co)
+[Visit APSquared.co](https://www.apsquared.co/tools) to test out the agents.
 
 ## Adding a New Agent
 
-To add a new agent to the APSquared site, follow these steps:
+To add a new agent follow these steps (assuming you have deployed the agents):
 
 ### 1. Create Agent Types
 
