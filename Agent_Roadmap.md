@@ -7,6 +7,7 @@ This is a list of features I would like to add to our [agent "framework"](https:
 - [ ] Retrieve Results from DB 
 - [ ] Recent Results
 - [ ] Create videos for each agent
+- [ ] Guest Post - https://aiagentslive.com/Guest%20Blogging%20Guidelines.pdf
 - [ ] Try CrewAI
 - [ ] Add Rate Limiting
 - [ ] Improve Security

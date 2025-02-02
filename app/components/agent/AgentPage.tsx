@@ -20,7 +20,7 @@ interface AgentPageProps<T extends AgentState> {
         label: string;
         type?: string;
         placeholder?: string;
-        optional?: boolean;
+        required?: boolean;
     }>;
     sourceCodeLink?: string;
     graphImageLink?: string;
@@ -191,14 +191,17 @@ export default function AgentPage<T extends AgentState>({
             <form onSubmit={handleSubmit} className="mb-8">
                 {formFields.map((field) => (
                     <div key={field.name} className="mb-4">
-                        <label className="block text-sm font-medium mb-1">{field.label}</label>
+                        <label className="block text-sm font-medium mb-1">
+                            {field.label}
+                            {field.required && <span className="text-red-500 ml-1">*</span>}
+                        </label>
                         <input
                             type={field.type || 'text'}
                             name={field.name}
                             value={formData[field.name] || ''}
                             onChange={(e) => setFormData(prev => ({ ...prev, [field.name]: e.target.value }))}
                             placeholder={field.placeholder}
-                            required={!field.optional}
+                            required={field.required}
                             className="w-full p-2 border rounded"
                         />
                     </div>

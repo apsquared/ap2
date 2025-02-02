@@ -39,38 +39,40 @@ const FORM_FIELDS = [
     name: "location_preference",
     label: "Location Preference",
     placeholder: "Enter preferred location",
+    required: true,
     },
     {
         name:'search_query', 
         label:'Search Query', 
-        placeholder:'Enter a description of the college you are looking for'
+        placeholder:'Enter a description of the college you are looking for',
+        required: true,
     },
   {
     name: "major",
     label: "Major/Field of Study",
     placeholder: "Enter desired major",
-    optional: true,
+    required: false,
   },
   {
     name: "max_tuition",
     label: "Maximum Tuition (USD/year)",
     type: "number",
     placeholder: "Enter maximum tuition",
-    optional: true,
+    required: false,
   },
   {
     name: "min_acceptance_rate",
     label: "Minimum Acceptance Rate (%)",
     type: "number",
     placeholder: "Enter minimum acceptance rate",
-    optional: true,
+    required: false,
   },
   {
     name: "sat_score",
     label: "SAT Score",
     type: "number",
     placeholder: "Enter your SAT score",
-    optional: true,
+    required: false,
   }
 ];
 

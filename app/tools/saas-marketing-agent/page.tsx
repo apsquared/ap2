@@ -45,22 +45,26 @@ const FORM_FIELDS = [
     name: "appName",
     label: "App Name",
     placeholder: "Enter your app name",
+    required: true,
   },
   {
     name: "appUrl",
     label: "App URL",
     placeholder: "Enter your app URL",
+    required: true,
   },
   {
     name: "max_personas",
     label: "Maximum Number of Personas",
     type: "number",
     placeholder: "Enter maximum number of personas",
+    required: false,
   },
   {
     name: "competitor_hint",
     label: "Main Competitor",
     placeholder: "Enter a main competitor",
+    required: false,
   }
 ];
 

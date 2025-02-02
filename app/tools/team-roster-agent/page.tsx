@@ -34,6 +34,7 @@ const FORM_FIELDS = [
     name: "college_name",
     label: "College Name",
     placeholder: "Enter college name",
+    required: true,
   }
 ];
 
