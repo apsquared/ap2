@@ -215,6 +215,9 @@ const renderLoadingState = (currentState: Partial<CollegeFinderAgentState>) => {
 };
 
 export default function CollegeFinderAgent() {
+  const sourceCodeLink = "https://github.com/apsquared/lg-agents/tree/main/src/agents/college_finder_agent";
+  const graphImageLink = "https://github.com/apsquared/lg-agents/blob/main/college_finder_graph.png?raw=true";
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
     <AgentPage<CollegeFinderAgentState>
@@ -222,6 +225,8 @@ export default function CollegeFinderAgent() {
       agentDisplayName="College Finder Agent"
       sampleSearches={SAMPLE_SEARCHES}
       formFields={FORM_FIELDS}
+      sourceCodeLink={sourceCodeLink}
+      graphImageLink={graphImageLink}
       >
         {{
           renderResults,

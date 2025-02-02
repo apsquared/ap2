@@ -6,6 +6,8 @@ export interface ToolItem {
   description: string
   icon: React.ElementType
   link: string
+  sourceCodeLink?: string
+  graphImageLink?: string
 }
 
 export const tools: ToolItem[] = [
@@ -14,6 +16,8 @@ export const tools: ToolItem[] = [
     description: "Generate a marketing plan for your SaaS product.",
     icon: Zap,
     link: "/tools/saas-marketing-agent",
+    sourceCodeLink: "https://github.com/apsquared/lg-agents/tree/main/src/agents/marketing_agent",
+    graphImageLink: "https://github.com/apsquared/lg-agents/blob/main/marketing_agent_graph.png?raw=true",
   },
   {
     name: "College Finder Agent",

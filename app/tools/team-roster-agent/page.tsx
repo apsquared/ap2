@@ -133,6 +133,9 @@ const renderLoadingState = (currentState: Partial<TeamRosterAgentState>) => {
 };
 
 export default function TeamRosterAgent() {
+  const sourceCodeLink = "https://github.com/apsquared/lg-agents/tree/main/src/agents/college_finder_agent";
+  const graphImageLink = "https://github.com/apsquared/lg-agents/blob/main/roster_graph.png?raw=true";
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <AgentPage<TeamRosterAgentState>
@@ -140,6 +143,8 @@ export default function TeamRosterAgent() {
         agentName="team-roster-agent"
         sampleSearches={SAMPLE_SEARCHES}
         formFields={FORM_FIELDS}
+        sourceCodeLink={sourceCodeLink}
+        graphImageLink={graphImageLink}
       >
         {{
           renderResults,

@@ -227,6 +227,8 @@ const renderLoadingState = (state: Partial<MarketingAgentState>) => {
 };
 
 export default function SaasMarketingAgent() {
+  const sourceCodeLink = "https://github.com/apsquared/lg-agents/tree/main/src/agents/marketing_agent";
+  const graphImageLink = "https://github.com/apsquared/lg-agents/blob/main/marketing_agent_graph.png?raw=true";
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <AgentPage<MarketingAgentState>
@@ -234,6 +236,8 @@ export default function SaasMarketingAgent() {
         agentDisplayName="SaaS Marketing Agent"
         sampleSearches={SAMPLE_SEARCHES}
         formFields={FORM_FIELDS}
+        sourceCodeLink={sourceCodeLink}
+        graphImageLink={graphImageLink}
         >
         {{
           renderResults,
