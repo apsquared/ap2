@@ -8,6 +8,7 @@ export enum AgentStatus {
 }
 
 export interface AgentState {
+  agent_name?: string;
   run_id: string;
   thread_id: string;
   status: AgentStatus;

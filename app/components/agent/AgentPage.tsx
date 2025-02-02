@@ -63,6 +63,28 @@ const StatusUpdates = ({ updates, isRunning }: { updates: string[], isRunning: b
     </div>
 );
 
+const saveAgentState = async (state: AgentState) => {
+    try {
+        const response = await fetch('/api/agent-db/create-update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(state)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to save agent state');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error saving agent state:', error);
+        throw error;
+    }
+};
+
+
 export default function AgentPage<T extends AgentState>({
     agentName,
     agentDisplayName,
@@ -101,6 +123,7 @@ export default function AgentPage<T extends AgentState>({
                 const data = await response.json();
 
                 setAgentState(data);
+                await saveAgentState(data);
 
                 if (data.status !== AgentStatus.RUNNING) {
                     clearInterval(pollInterval);
@@ -144,6 +167,7 @@ export default function AgentPage<T extends AgentState>({
 
             const data = await response.json();
             setRunId(data.run_id);
+            await saveAgentState(data);
         } catch (error) {
             console.error('Error:', error);
             setError('Failed to start agent');
