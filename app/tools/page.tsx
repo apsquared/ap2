@@ -1,5 +1,24 @@
 import { tools } from "./data/tools"
 import { ToolCard } from "./components/ToolCard"
+import { Metadata } from "next"
+export const metadata: Metadata = {
+  title: "Full Stack AI Agent Examples",
+  description: "Find examples of AI Agents built using our full stack agent framework using NextJS and LangGraph",
+  alternates: {
+    canonical: "https://www.apsquared.co/tools",
+  },
+  openGraph: {
+    title: "Full Stack AI Agent Examples",
+    description: "Find examples of AI Agents built using our full stack agent framework using NextJS and LangGraph",
+    type: "website",
+    images: [{
+      url: "/og-marketing-agent.png",
+      width: 1200,
+      height: 630,
+      alt: "Full Stack AI Agent Examples"
+    }]
+  }
+}
 
 export default function ToolsDisplay() {
   return (
