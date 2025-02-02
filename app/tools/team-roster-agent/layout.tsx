@@ -1,36 +1,36 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Team Roster AI Agent",
+  title: "Baseball Team Research AI Agent",
   alternates: {
     canonical: "https://www.apsquared.co/tools/team-roster-agent",
   },
-  description: "Generate optimized team rosters with our AI-powered tool. Get personalized team composition recommendations based on player stats, positions, and team requirements.",
+  description: "Research college baseball teams and analyze rosters with our AI-powered tool. Get detailed insights about team compositions, player statistics, and program details to help players evaluate team fit and opportunities.",
   keywords: [
-    "team roster",
-    "roster generator",
-    "team composition",
-    "team planning",
-    "roster optimization",
-    "team management",
-    "player selection",
-    "sports analytics"
+    "baseball team research",
+    "college baseball rosters",
+    "baseball player stats",
+    "team composition analysis",
+    "baseball program evaluation",
+    "player scouting",
+    "baseball analytics",
+    "college baseball research"
   ],
   openGraph: {
-    title: "Team Roster AI Agent",
-    description: "AI-powered tool to optimize your team roster based on player stats and team requirements",
+    title: "Baseball Team Research AI Agent",
+    description: "AI-powered tool to research baseball teams, analyze rosters, and evaluate player opportunities",
     type: "website",
     images: [{
       url: "/og-team-roster.png",
       width: 1200,
       height: 630,
-      alt: "Team Roster Tool"
+      alt: "Baseball Team Research Tool"
     }]
   },
   twitter: {
     card: "summary_large_image",
-    title: "Team Roster Tool",
-    description: "AI-powered tool to optimize your team roster based on player stats and team requirements",
+    title: "Baseball Team Research Tool",
+    description: "AI-powered tool to research baseball teams, analyze rosters, and evaluate player opportunities",
     images: ["/og-team-roster.png"]
   }
 };
