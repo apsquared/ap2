@@ -2,6 +2,9 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Team Roster AI Agent",
+  alternates: {
+    canonical: "https://www.apsquared.co/tools/team-roster-agent",
+  },
   description: "Generate optimized team rosters with our AI-powered tool. Get personalized team composition recommendations based on player stats, positions, and team requirements.",
   keywords: [
     "team roster",

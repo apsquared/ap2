@@ -2,6 +2,9 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "College Finder AI Agent",
+  alternates: {
+    canonical: "https://www.apsquared.co/tools/college-finder-agent",
+  },
   description: "Find the perfect college match with our AI-powered college finder tool. Get personalized college recommendations based on your preferences, major, location, and budget.",
   keywords: [
     "college finder",

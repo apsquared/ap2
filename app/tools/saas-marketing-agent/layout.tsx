@@ -2,6 +2,9 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "SaaS Marketing AI Agent",
+  alternates: {
+    canonical: "https://www.apsquared.co/tools/saas-marketing-agent",
+  },
   description: "Generate comprehensive marketing content for your SaaS product. Get AI-generated personas, competitor analysis, value propositions, and marketing suggestions.",
   keywords: [
     "SaaS marketing",
