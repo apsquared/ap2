@@ -115,3 +115,28 @@ export async function getAgentStatesByName(agentName: string): Promise<AgentStat
     } as AgentState));
 }
 
+/**
+ * Gets agent states  sorted by start time descending
+ * @returns Array of AgentState documents
+ */
+export async function getAllAgentStates(): Promise<AgentState[]> {
+    const client = await clientPromise;
+    const collection = client.db(AGENT_DB).collection(AGENT_STATE_COLLECTION);
+
+    const result = await collection
+        .find({ })
+        .sort({ start_time: -1 })
+        .toArray();
+
+    return result.map(doc => ({
+        run_id: doc.run_id,
+        thread_id: doc.thread_id,
+        status: doc.status,
+        start_time: new Date(doc.start_time),
+        last_update: new Date(doc.last_update),
+        current_state: doc.current_state,
+        agent_name: doc.agent_name,
+        status_updates: doc.status_updates || [],
+        _id: doc._id
+    } as AgentState));
+}

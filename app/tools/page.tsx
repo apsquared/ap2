@@ -1,6 +1,7 @@
 import { tools } from "./data/tools"
 import { ToolCard } from "./components/ToolCard"
 import { Metadata } from "next"
+
 export const metadata: Metadata = {
   title: "Full Stack AI Agent Examples",
   description: "Find examples of AI Agents built using our full stack agent framework using NextJS and LangGraph",
