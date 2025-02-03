@@ -26,6 +26,7 @@ export default async function AllRunsPage() {
             ) : 'Unknown'}</div>
             <div>Status: {run.status}</div>
             <div>Created: {run.start_time ? new Date(run.start_time).toLocaleString() : 'N/A'}</div>
+            <div>Last Update: {run.last_update ? new Date(run.last_update).toLocaleString() : 'N/A'}</div>
           </div>
         ))}
         {runs.length === 0 && (
