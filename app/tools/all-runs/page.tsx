@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   robots: 'noindex, nofollow'
 };
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+
 export default async function AllRunsPage() {
   const runs = await getAllAgentStates();
   
