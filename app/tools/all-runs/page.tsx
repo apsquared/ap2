@@ -20,7 +20,7 @@ export default async function AllRunsPage() {
           <div key={index} className="border p-4 rounded-lg">
             <div className="font-semibold">Run ID: {run.run_id}</div>
             <div>Agent: {run.agent_name ? (
-              <a href={`/tools/${run.agent_name.toLowerCase()}?run_id=${run.run_id}`} className="text-blue-500 hover:underline">
+              <a href={`/tools/${run.agent_name.toLowerCase()}?runId=${run.run_id}`} className="text-blue-500 hover:underline">
                 {run.agent_name}
               </a>
             ) : 'Unknown'}</div>
