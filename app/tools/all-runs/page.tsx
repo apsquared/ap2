@@ -20,7 +20,7 @@ export default async function AllRunsPage() {
           <div key={index} className="border p-4 rounded-lg">
             <div className="font-semibold">Run ID: {run.run_id}</div>
             <div>Agent: {run.agent_name ? (
-              <a href={`/tools/${run.agent_name.toLowerCase()}?runId=${run.run_id}`} className="text-blue-500 hover:underline">
+              <a href={`/tools/${agentNameToUrl(run.agent_name.toLowerCase())}?runId=${run.run_id}`} className="text-blue-500 hover:underline">
                 {run.agent_name}
               </a>
             ) : 'Unknown'}</div>
@@ -36,3 +36,16 @@ export default async function AllRunsPage() {
     </div>
   );
 }
+
+const agentNameToUrl = (agentName: string): string => {
+  // Map of agent names to their URL paths
+  const agentUrls: Record<string, string> = {
+    'marketing-agent': 'saas-marketing-agent',
+    'college-agent': 'college-finer-agent', 
+  };
+
+  // Convert agent name to lowercase and look up in map
+  const lowerName = agentName.toLowerCase();
+  return agentUrls[lowerName] || lowerName;
+};
+

@@ -1,11 +1,11 @@
 # Roadmap
 
-This is a list of features I would like to add to our [agent "framework"](https://www.apsquared.co/full-stack-ai-agents).
+This is a list of features I would like to add to our [agent "framework"](https://www.apsquared.co/posts/full-stack-ai-agents).
 
 - [x] Add Source Link / Graph image to agent pages (in progress)
-- [ ] Save Results to DB (in progress)
+- [x] Save Results to DB 
 - [ ] Retrieve Results from DB 
-- [ ] Recent Results
+- [x] Recent Results
 - [ ] Create videos for each agent
 - [ ] Guest Post - https://aiagentslive.com/Guest%20Blogging%20Guidelines.pdf
 - [ ] Try CrewAI
