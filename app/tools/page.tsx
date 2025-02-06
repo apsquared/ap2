@@ -29,7 +29,7 @@ export default function ToolsDisplay() {
         The following are some sample AI Agents that we have built using our <a className="text-blue-500 hover:underline" href="https://www.apsquared.co/posts/full-stack-ai-agents">full stack agent &quot;framework&quot;</a>.
         Each agent can be run in the browser and contains links to the source code and a graph of the agent.
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         {tools.map((tool, index) => (
           <ToolCard key={index} {...tool} />
         ))}

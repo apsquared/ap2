@@ -46,7 +46,7 @@ const LoadingIndicator = () => (
     </div>
 );
 
-const StatusUpdates = ({ updates, isRunning }: { updates: string[], isRunning: boolean }) => (
+const StatusUpdates = ({ updates, isRunning }: { updates: (string | { timestamp: string; description: string; output: string; })[], isRunning: boolean }) => (
     <div className="mb-8">
         <h2 className="text-xl font-semibold mb-2">Status Updates</h2>
         {isRunning && <LoadingIndicator />}
@@ -56,7 +56,14 @@ const StatusUpdates = ({ updates, isRunning }: { updates: string[], isRunning: b
                     key={index} 
                     className="p-3 bg-gray-50 dark:bg-slate-800 rounded border border-gray-200 dark:border-gray-700"
                 >
-                    <ReactMarkdown>{update}</ReactMarkdown>
+                    {typeof update === 'string' ? (
+                        <ReactMarkdown>{update}</ReactMarkdown>
+                    ) : (
+                        <>
+                            <div className="text-sm text-gray-500 mb-1">{new Date(update.timestamp).toLocaleString()}</div>
+                            <p>{update.description}</p>
+                        </>
+                    )}
                 </div>
             ))}
         </div>
@@ -169,8 +176,9 @@ export default function AgentPage<T extends AgentState>({
             }
 
             const data = await response.json();
-            setRunId(data.run_id);
             await saveAgentState(data, agentName);
+            setRunId(data.run_id);
+            
         } catch (error) {
             console.error('Error:', error);
             setError('Failed to start agent');
@@ -275,7 +283,6 @@ export default function AgentPage<T extends AgentState>({
 
             {agentState?.status === AgentStatus.COMPLETED && agentState && (
                 <div>
-                    Results:
                     {renderResults(agentState)}
                 </div>
             )}

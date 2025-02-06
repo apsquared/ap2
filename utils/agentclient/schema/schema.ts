@@ -15,7 +15,11 @@ export interface AgentState {
   start_time: Date;
   last_update: Date;
   current_state: Record<string, any>;
-  status_updates: string[];
+  status_updates: Array<string | {
+    timestamp: string;
+    description: string; 
+    output: string;
+  }>;
 }
 
 

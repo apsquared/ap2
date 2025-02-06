@@ -125,7 +125,7 @@ export async function getAllAgentStates(): Promise<AgentState[]> {
 
     const result = await collection
         .find({ })
-        .sort({ start_time: -1 })
+        .sort({ last_update: -1 })
         .toArray();
 
     return result.map(doc => ({
