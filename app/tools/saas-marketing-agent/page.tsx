@@ -242,6 +242,7 @@ export default function SaasMarketingAgent() {
         formFields={FORM_FIELDS}
         sourceCodeLink={sourceCodeLink}
         graphImageLink={graphImageLink}
+        agentType="langgraph"
         >
         {{
           renderResults,

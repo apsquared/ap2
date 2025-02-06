@@ -184,6 +184,7 @@ export default function VacationHouseAgent() {
         agentDisplayName="Vacation House Finder"
         sampleSearches={SAMPLE_SEARCHES}
         formFields={FORM_FIELDS}
+        agentType="crewai"
       >
         {{
           renderResults,

@@ -146,6 +146,7 @@ export default function TeamRosterAgent() {
         formFields={FORM_FIELDS}
         sourceCodeLink={sourceCodeLink}
         graphImageLink={graphImageLink}
+        agentType="langgraph"
       >
         {{
           renderResults,

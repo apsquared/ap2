@@ -229,6 +229,7 @@ export default function CollegeFinderAgent() {
       formFields={FORM_FIELDS}
       sourceCodeLink={sourceCodeLink}
       graphImageLink={graphImageLink}
+      agentType="langgraph"
       >
         {{
           renderResults,
