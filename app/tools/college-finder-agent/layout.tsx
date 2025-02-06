@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://apsquared.co'),
   title: "College Finder AI Agent",
   alternates: {
     canonical: "https://www.apsquared.co/tools/college-finder-agent",

@@ -185,6 +185,7 @@ export default function VacationHouseAgent() {
         sampleSearches={SAMPLE_SEARCHES}
         formFields={FORM_FIELDS}
         agentType="crewai"
+        sourceCodeLink="https://github.com/apsquared/lg-agents/tree/main/src/crew_agents/vacation_house_agent"
       >
         {{
           renderResults,

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://apsquared.co'),
   title: "Vacation House Finder AI Agent",
   alternates: {
     canonical: "https://www.apsquared.co/tools/vacation-house-agent",
