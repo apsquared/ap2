@@ -1,0 +1,63 @@
+---
+title: CrewAI Full Stack Agent
+description: Learn how we built a full stack agent using CrewAI
+date: "2025-02-06"
+image: https://miro.medium.com/v2/resize:fit:1400/1*NZJp8YSggSLwkxLIHgSwWg.png
+---
+
+# Building Full Stack Agents with CrewAI
+
+In our [previous article about full stack AI agents](/posts/full-stack-ai-agents), we explored building agents using LangGraph. Now let's look at how to integrate [CrewAI](https://www.crewai.com/) into the same architecture.
+
+## What is CrewAI?
+
+CrewAI is a framework for orchestrating role-playing autonomous AI agents. It allows you to create agents with specific roles that work together to accomplish tasks. This is particularly useful for complex workflows that require multiple specialized steps.
+
+## Why Use CrewAI?
+
+While LangGraph excels at defining state machines and workflows, CrewAI shines when you need:
+
+1. Multiple agents with distinct roles
+2. Complex interactions between agents
+3. Role-based task delegation
+4. Hierarchical agent structures
+
+In my opinion CrewAI allows you to build agents that are more human-like and autonomous way while LangGraph 
+is more comfortable for traditional programmers.
+
+I see both being helpful in different scenarios, which is why I'm glad that I was able use one approach to deploy both.
+
+## When to use CrewAI vs. LangGraph
+
+In my opinion LangGraph is better for traditional programmers who are used to working with state machines and workflows.
+It is also better when you want more control over the workflow.  Things like "run for each X" is easier to do with LangGraph.
+
+CrewAI is better when you want to build agents that are more human-like and autonomous.  
+CrewAI feels more like you are defining a role for an agent and then letting it work on its own.
+
+
+## Vacation House Agent
+
+Let's look at a practical example - a vacation house finder agent built with CrewAI. This agent helps users find vacation rental properties based on their preferences and requirements.
+
+## Agent Implementation
+
+The vacation house finder uses three specialized agents working together:
+
+1. **Research Agent** - Gathers information about vacation destinations and rental markets
+2. **Property Finder** - Searches for specific properties matching user criteria  
+3. **Analyst Agent** - Evaluates and ranks properties based on user preferences
+
+You can see the full implementation [here](https://github.com/apsquared/lg-agents/tree/main/src/crew_agents/vacation_house_agent) 
+and even play with the agent directly [here](https://www.apsquared.co/tools/vacation-house-agent).
+
+## Full Stack approach
+
+The hardest part working with both CrewAI and LangGraph is getting them working as a background API while providing updates to the frontend.
+After playing with some lock challenges in the Python code, I found a solution that seems to be working well.  
+
+## Conclusion
+
+By integrating CrewAI and LangGraph into a single architecture, we've created a more flexible and autonomous agent system. This approach allows us to leverage the strengths of both frameworks, providing a robust solution for complex AI workflows.
+
+Whether you're building a simple chatbot or a complex workflow, CrewAI offers a powerful way to manage and orchestrate your agents. Give it a try and see how it can enhance your AI projects!
