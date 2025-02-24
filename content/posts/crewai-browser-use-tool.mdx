@@ -1,0 +1,74 @@
+---
+title: Using Browser Tools with CrewAI Agents
+description: Learn how to enable CrewAI agents to interact with web browsers for automation
+date: "2025-02-23"
+image: https://browser-use.com/logo.svg
+---
+
+[Browser Use](https://browser-use.com/) is a popular new tool that allows AI to control web browsers and uses LLMs to generate the actions.
+While it can be used as its own type of AI Agent, I wanted to pair it with CrewAI to create a more powerful and flexible agent.
+As I've previously mentioned, I'm a big fan of using CrewAI to create agents that can perform a wide range of tasks. 
+You can learn more about CrewAI in my [previous post](/posts/crewai-agent) where I explore a full stack framework for building and deploying CrewAI agents.
+
+## CrewAI Tools
+
+CrewAI has a powerful tooling system that allows you to create custom tools for your agents. My goal was to utilize Browser Use as a tool for my agents.
+Experimenting I found that it works best to wrapper Browser Use as a specific tool to achieve a certain outcome rather than a general purpose tool.
+One challenge I faced was that CrewAI tools don't natively support running async functions and Browser Use requires async functions to interact with the browser.
+Also my full stack framework already was using Python event loops which seemed to conflict with how I was trying to run the Browser Use tool.
+
+## CrewAI Browser Use Tool
+
+To get around these issues, I created a custom CrewAI tool that uses the Browser Use API.
+Here's the code for the tool (note I am not a Python expert so this code is probably not perfect):
+
+```python
+
+from pydantic import BaseModel, Field
+from crewai.tools import BaseTool
+from agents.privateagents.private.thc_agent.schemas import ProductList
+from crew_agents.tools.websearch import use_browser
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
+class WebsiteInput(BaseModel):
+    """Input schema for the Product Browser Tool"""
+    website: str = Field(
+        description="The website URL to search for products"
+    )
+
+class ProductBrowserTool(BaseTool):
+    name: str = "Product Browser Tool"
+    description: str = "Use a browser to search for products on the specified website"
+    args_schema: type[BaseModel] = WebsiteInput
+
+    async def _arun(self, website: str) -> str:
+        result = await use_browser(
+            f"""Go to {website} and search the entire site for products. (....more instructions....)""",
+            ProductList,
+            20
+        )
+        return result
+
+    def run_async_code(self, website: str) -> str:
+        """Run async code in a new event loop"""
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(self._arun(website))
+        loop.close()
+        return result
+
+    def _run(self, website: str) -> str:
+        with ThreadPoolExecutor() as executor:
+            future = executor.submit(self.run_async_code, website)
+            result = future.result()
+             return result
+    
+
+```
+
+### Using the Tool
+
+Now that we have the tool, we can use it in a CrewAI tasks, just pass it in the tools parameter.
+
+Overall it seems to be working well for my use case. Hope this helps someone else looking to use Browser Use with CrewAI.
