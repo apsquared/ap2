@@ -1,0 +1,143 @@
+---
+title: 'Enhancing Web Crawling: The Sitemap Tool for CrewAI'
+date: '2024-03-26'
+tags: ['crewai', 'tools', 'web-scraping', 'python']
+draft: false
+summary: 'Learn how we improved web crawling in CrewAI by creating a dedicated Sitemap tool that efficiently discovers and processes website content using XML sitemaps.'
+---
+
+When building AI agents that need to explore websites comprehensively, discovering all relevant pages efficiently is crucial. While traditional web crawling approaches work, they can be slow and resource-intensive. XML sitemaps provide a more structured and efficient way to discover website content.
+
+## The Challenge of Web Crawling
+
+Traditional web crawling typically involves:
+
+1. Starting from a homepage
+2. Following links recursively
+3. Maintaining a list of visited pages
+4. Handling pagination and dynamic content
+5. Dealing with rate limiting and server load
+
+This approach has several drawbacks:
+
+1. It's time-consuming and resource-intensive
+2. Important pages might be missed
+3. Crawling can put unnecessary load on servers
+4. Complex site structures can be difficult to navigate
+
+## Enter the Sitemap Tool
+
+To address these limitations, we created a specialized Sitemap tool for CrewAI that leverages XML sitemaps to efficiently discover website content. Here's how it works:
+
+```python
+class SitemapTool(BaseTool):
+    """Tool for extracting URLs from a sitemap."""
+    name: str = "Sitemap URL Extractor"
+    description: str = "Extract all URLs from a sitemap XML file, including crawling referenced sitemaps"
+    args_schema: Type[BaseModel] = SitemapToolSchema
+```
+
+The tool is designed to process XML sitemaps - a standardized format that websites use to list all their important pages. This includes handling both simple sitemaps and sitemap index files that reference multiple sitemaps.
+
+## Key Features
+
+1. **Structured Data Model**: We use Pydantic to define a clear structure for sitemap data:
+```python
+class SitemapData(BaseModel):
+    """Model for sitemap data extracted from a sitemap XML."""
+    urls: List[str] = Field(default_factory=list, description="List of URLs found in the sitemap")
+    errors: List[str] = Field(default_factory=list, description="List of any errors encountered")
+```
+
+2. **Recursive Processing**: The tool can handle nested sitemap structures:
+```python
+def _process_sitemap(self, url: str, sitemap_data: SitemapData) -> None:
+    # Handle sitemap index files
+    sitemaps = soup.find_all("sitemap")
+    if sitemaps:
+        for sitemap in sitemaps:
+            loc = sitemap.find("loc")
+            if loc and loc.text:
+                self._process_sitemap(loc.text, sitemap_data)
+```
+
+3. **Error Handling**: The tool gracefully handles and reports errors:
+```python
+try:
+    # Process sitemap
+    # ...
+except Exception as e:
+    sitemap_data.errors.append(f"Error processing sitemap {url}: {str(e)}")
+```
+
+## Benefits Over Traditional Crawling
+
+The Sitemap tool offers several advantages:
+
+1. **Efficiency**: Direct access to all important URLs without crawling
+2. **Completeness**: Sitemaps typically list all public pages
+3. **Resource-Friendly**: Minimal requests needed to discover content
+4. **Structure-Aware**: Handles complex sitemap hierarchies
+5. **Error Resilient**: Continues processing even if some sitemaps fail
+
+## Using the Tool
+
+Using the tool in your CrewAI agents is straightforward:
+
+```python
+from crewai import Agent
+from tools import SitemapTool
+
+crawler = Agent(
+    role='Web Crawler',
+    goal='Discover website content',
+    tools=[SitemapTool()]
+)
+```
+
+The agent can then use the tool to quickly discover all pages on a website by processing its sitemap.
+
+## Real-World Example
+
+Let's say you want to discover all the blog posts on a website. Here's how you might use the Sitemap tool:
+
+```python
+# Example sitemap processing
+sitemap_data = SitemapData()
+sitemap_tool._process_sitemap("https://example.com/sitemap.xml", sitemap_data)
+
+# The result includes all URLs from the sitemap
+for url in sitemap_data.urls:
+    print(f"Found page: {url}")
+```
+
+## Part of a Larger Toolset
+
+The Sitemap tool is part of our growing collection of web interaction tools for CrewAI. It works particularly well with our other tools:
+
+- [OpenGraph Tool](/posts/opengraph-crewai-tool): Extracts metadata from discovered pages
+- Sitemap Tool: Discovers website structure efficiently
+- Browser Use Tool: Handles complex interactions when needed
+
+## Implementation Details
+
+The tool uses several key technologies:
+
+1. **BeautifulSoup**: For parsing XML sitemap files
+2. **Pydantic**: For data validation and serialization
+3. **Requests**: For fetching sitemap files with proper headers
+4. **Type Hints**: For better code maintainability and IDE support
+
+The complete implementation includes proper error handling, recursive processing of sitemap indexes, and automatic saving of results to a JSON file for later use.
+
+## Conclusion
+
+While traditional web crawling has its place, specialized tools like our Sitemap extractor provide more efficient solutions for discovering website content. By leveraging standardized sitemap formats, we can build more efficient AI agents that can quickly and reliably discover web content.
+
+The Sitemap tool is just one example of how targeted solutions can improve the capabilities of AI agents. As we continue to develop CrewAI, we're always looking for opportunities to create specialized tools that make our agents more capable and efficient.
+
+You can find the full source code for our tools on GitHub:
+- [Sitemap Tool Source](https://github.com/apsquared/lg-agents/blob/main/src/crew_agents/tools/sitemap.py)
+- [OpenGraph Tool Source](https://github.com/apsquared/lg-agents/blob/main/src/crew_agents/tools/opengraph.py)
+
+
