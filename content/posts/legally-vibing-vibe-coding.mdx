@@ -1,0 +1,156 @@
+---
+title: Using AI Agents and Vibe Coding to Build Legally Vibing
+description: Learn how I used AI Agents and Vibe Coding to build and luanch LegallyVibing.com in a week.
+date: "2025-03-28"
+image: https://www.legallyvibing.com/logo.png
+---
+
+## How I Built Legally Vibing Using Vibe Coding and AI Agents
+
+*Discover how curiosity about legal THC turned into a fully automated cannabis discovery engine — powered by Cursor, CrewAI, and a lot of good vibes.*
+
+![LegallyVibing.com Screenshot](https://www.legallyvibing.com/screenshot2.png)
+
+---
+
+## 🌿 Why I Built Legally Vibing
+
+A while back, I stumbled into the strange and fascinating world of **legal THC products** — things like hemp-derived Delta-9 seltzers and edibles that are federally compliant under the 2018 Farm Bill.
+
+They’re totally legal to buy online, but its sometimes hard to understand which products are best.  There was no "Amazon" for THC products.
+
+Each brand had its own site, product names were confusing, and information was scattered across Reddit threads and obscure blog posts. There was no central, trustworthy hub for this new wave of cannabis products.
+
+That’s when the idea hit: **what if I built the Leafly of legal THC?**  
+But focused *only* on compliant, online-available products like gummies and seltzers?
+
+That became [**LegallyVibing.com**](https://www.legallyvibing.com):  
+*Your trusted guide to legal THC products across the web.*
+
+![LegallyVibing.com Screenshot](https://www.legallyvibing.com/screenshot1.png)
+
+
+---
+
+## ⚒️ Building the Site with Vibe Coding
+
+### What is “Vibe Coding”?
+
+Vibe coding is what I call my favorite dev flow:  
+A blend of AI pair programming, rapid prototyping, and not overthinking anything.
+
+For this project, I used [**Cursor**](https://www.cursor.com) — an AI-powered code editor that makes it faster to develop.  
+As an experienced developer I was hesitant to give up control of my code but after a few days of 'vibing' it was clear how much more productive I was.
+Vibe coding isn't without its headaches and I'll talk more about lessons learned below.
+
+
+
+### Best Practices for Vibe Coding
+
+After weeks of building with Cursor, I've developed some key practices that help me stay productive while "vibing":
+
+1. **Be Specific in Your Prompts**
+   - Describe exactly what you want, including edge cases
+   - Include context about your tech stack and dependencies
+   - Mention performance requirements or constraints upfront
+   - Example: Instead of "add auth", say "add Firebase email/password auth with error handling"
+
+2. **Take Small, Testable Steps**
+   - Break features into mini-milestones
+   - Let Cursor handle one component or function at a time
+   - Review and understand each suggestion before moving on
+   - Keep your git commits atomic and descriptive
+
+3. **Stay in Control of the Code**
+   - Don't blindly accept every suggestion
+   - If Cursor generates too much at once, start over with a smaller scope
+   - Run tests frequently to catch issues early
+   - Keep a clear mental model of your architecture
+
+4. **Know When to Reset**
+   - If you're going in circles with an AI suggestion, take a break
+   - Sometimes starting fresh with a new prompt is faster than debugging
+   - Don't be afraid to throw away generated code that isn't working
+   - Step back and rethink your approach if you're not making progress
+   - Consider switching to manual coding for complex logic or edge cases
+
+
+---
+
+## 🕵️ Using AI Agents to Curate the Products
+
+One of the most interesting parts of building Legally Vibing was creating an autonomous data pipeline using [CrewAI](https://www.crewai.com). I built a system of agents that work together to discover and catalog new THC products:
+
+### Company Discovery Agent
+
+The first agent acts as a research assistant, combining web search APIs with browser automation to find new THC companies:
+
+- Uses Websearch tools to find potential vendors
+- Leverages Browser Use for deeper investigation of promising leads
+- Maintains a scoring system to prioritize legitimate businesses
+- Automatically filters out non-compliant or suspicious vendors
+
+### Product Mapping Agent
+
+Once we have a verified company, a specialized agent maps their product catalog:
+
+- Generates and crawls complete website sitemaps
+- Identifies product pages using URL patterns and content analysis
+- Creates structured data about product locations
+- Flags new products for detailed analysis
+
+### Product Details Agent
+
+A third agent dives deep into each product:
+
+- Extracts key details using custom OpenGraph parsers
+- Cross-references product claims with lab reports
+- Standardizes data format for consistent storage
+- Generates SEO-friendly product descriptions
+
+### 💾 Database Integration Agent
+
+Finally, a database agent handles all the CRUD operations:
+
+- Validates data against our MongoDB schema
+- Updates existing products or creates new entries
+- Maintains relationship data between products
+- Tracks changes for audit purposes
+
+The agents communicate through a message queue, with each one passing validated data to the next stage. This autonomous pipeline runs daily, keeping our product database fresh and accurate with minimal human oversight.
+
+
+![LegallyVibing.com Screenshot](https://www.legallyvibing.com/screenshot3.png)
+
+
+
+### 🤯 Key Lessons from AI Automation
+
+- You *can’t* fully trust the first result — each agent needs clear prompts + validation layers.
+- Start slow and validate each step before moving forward — rushing leads to messy data.
+- Triple-check everything: inputs, outputs, and the steps between.
+- Build tools to catch and fix mistakes — they *will* happen at scale.  For example we have a simple edit company / product capability to correct issues.
+
+
+---
+
+## Current Challenges
+
+- Keeping listings clean, legal, and up-to-date
+- Boosting SEO in a space that’s still taboo many places
+- Need more backlinks!
+- Getting exposure in a community that I have little connections with
+
+
+
+---
+
+
+## Final Thoughts
+
+Building [**Legally Vibing**](https://www.legallyvibing.com) has been part tech sprint, part mission.
+
+If you’re curious about what’s out there — or building in the legal cannabis space yourself — let’s talk.  
+The future of cannabis is compliant, data-driven, and built with love + AI.
+
+👉 **Try it out at [LegallyVibing.com](https://www.legallyvibing.com)**  

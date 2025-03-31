@@ -21,7 +21,7 @@ module.exports = {
     if (path.includes('/posts/')) {
       return {
         loc: path,
-        changefreq: 'weekly',
+        changefreq: 'daily',
         priority: 0.7,
         lastmod: new Date().toISOString(),
       }
