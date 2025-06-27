@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         }
 
         const postBridge = new PostBridgeUtil({
-            apiKey: '3ZTgbYjzw4wED3y8AiQapuNB'
+            apiKey: ''
         });
 
 
