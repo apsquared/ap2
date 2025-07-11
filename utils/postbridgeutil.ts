@@ -3,7 +3,22 @@ import axios, { AxiosInstance } from 'axios';
 export const AP2_BLUESKY="11609"
 export const AP2_TWITTER="11494"
 
+export const LV_FACEBOOK="11491"
+export const LV_TWITTER="11490"
+export const LV_INSTAGRAM="11487"
 
+export const TVF_FACEBOOK="11493"
+export const TVF_TWITTER="11492"
+export const TVF_INSTAGRAM="11489"
+
+export const BARGPT_FACEBOOK="11492"
+export const BARGPT_TWITTER="11491"
+export const BARGPT_INSTAGRAM="11488"
+
+export const AP2_SOCIAL_ACCOUNTS=[AP2_BLUESKY, AP2_TWITTER]
+export const LV_SOCIAL_ACCOUNTS=[LV_FACEBOOK, LV_TWITTER, LV_INSTAGRAM]
+export const TVF_SOCIAL_ACCOUNTS=[TVF_FACEBOOK, TVF_TWITTER, TVF_INSTAGRAM]
+export const BARGPT_SOCIAL_ACCOUNTS=[BARGPT_FACEBOOK, BARGPT_TWITTER, BARGPT_INSTAGRAM]
 
 interface PostBridgeConfig {
   apiKey: string;
