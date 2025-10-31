@@ -1,0 +1,60 @@
+{
+  "manifest_version": 3,
+  "name": "Projection Lab Export",
+  "version": "1.0.0",
+  "description": "Export data from Projection Lab using the Plugin API",
+  
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  
+  "host_permissions": [
+    "https://app.projectionlab.com/*",
+    "https://apsquared.co/*",
+    "https://*.apsquared.co/*",
+    "http://localhost:*/*",
+    "https://localhost:*/*"
+  ],
+  
+  "content_scripts": [
+    {
+      "matches": ["https://app.projectionlab.com/*"],
+      "js": ["content.js"]
+    },
+    {
+      "matches": [
+        "https://apsquared.co/*", 
+        "https://*.apsquared.co/*",
+        "http://localhost:*/*",
+        "https://localhost:*/*"
+      ],
+      "js": ["website-content.js"]
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Projection Lab Export"
+  },
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["inpage.js"],
+      "matches": ["https://app.projectionlab.com/*"]
+    },
+    {
+      "resources": ["website-inpage.js"],
+      "matches": [
+        "https://apsquared.co/*", 
+        "https://*.apsquared.co/*",
+        "http://localhost:*/*",
+        "https://localhost:*/*"
+      ]
+    }
+  ]
+}
