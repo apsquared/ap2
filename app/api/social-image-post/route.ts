@@ -1,4 +1,4 @@
-import { PostBridgeUtil, AP2_SOCIAL_ACCOUNTS, BARGPT_SOCIAL_ACCOUNTS, TVF_SOCIAL_ACCOUNTS, LV_SOCIAL_ACCOUNTS } from "@/utils/postbridgeutil";
+import { PostBridgeUtil, AP2_SOCIAL_ACCOUNTS, BARGPT_SOCIAL_ACCOUNTS, TVF_SOCIAL_ACCOUNTS, LV_SOCIAL_ACCOUNTS, TVF_VIDEO_SOCIAL_ACCOUNTS } from "@/utils/postbridgeutil";
 import { NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic';
@@ -35,14 +35,50 @@ export async function POST(request: Request) {
             social_accounts = TVF_SOCIAL_ACCOUNTS;
         } else if (social_account === "BARGPT") {
             social_accounts = BARGPT_SOCIAL_ACCOUNTS;
+        } else if (social_account === "TVF_VIDEO") {
+            social_accounts = TVF_VIDEO_SOCIAL_ACCOUNTS;
         }
 
         const postBridge = new PostBridgeUtil({
             apiKey: POSTBRIDGE_API_KEY
         });
+        // Extract the file name with extension from fileUrl
+        let fileName = 'uploaded-file.png';
+        try {
+            const urlParts = fileUrl.split('/');
+            if (urlParts.length > 0) {
+                const lastPart = urlParts[urlParts.length - 1];
+                // Ignore querystrings/fragments if present
+                fileName = lastPart.split('?')[0].split('#')[0];
+                if (!fileName) fileName = 'uploaded-file.png';
+            }
+        } catch (e) {
+            fileName = 'uploaded-file.png';
+        }
+        // figure out mime type from filename
+        let mimeType = 'image/png';
+        const ext = fileName.split('.').pop()?.toLowerCase();
+        if (ext === 'jpg' || ext === 'jpeg') {
+            mimeType = 'image/jpeg';
+        } else if (ext === 'png') {
+            mimeType = 'image/png';
+        } else if (ext === 'gif') {
+            mimeType = 'image/gif';
+        } else if (ext === 'webp') {
+            mimeType = 'image/webp';
+        } else if (ext === 'bmp') {
+            mimeType = 'image/bmp';
+        } else if (ext === 'tiff' || ext === 'tif') {
+            mimeType = 'image/tiff';
+        } else if (ext === 'mp4') {
+            mimeType = 'video/mp4';
+        }
 
+        console.log("Uploading file: " + fileName);
+        console.log("Mime type: " + mimeType);
         const media = await postBridge.uploadFileFromUrl(fileUrl, {
-            name: 'uploaded-filed.png'
+            name: fileName,
+            mime_type: mimeType
         });
         console.log(media);
         const media_id = media.data.media_id;
