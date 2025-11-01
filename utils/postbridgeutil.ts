@@ -8,7 +8,7 @@ export const LV_TWITTER="11490"
 export const LV_INSTAGRAM="11487"
 
 export const TVF_FACEBOOK="11493"
-export const TVF_TWITTER="11492"
+export const TVF_TWITTER="35325"
 export const TVF_INSTAGRAM="11489"
 export const TVF_TIKTOK="32284"
 
