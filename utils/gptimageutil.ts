@@ -18,7 +18,7 @@ export enum ImageShape {
 
 export const generateImage = async (prompt: string,shape:ImageShape=ImageShape.SQUARE): Promise<Buffer> => {
     const img = await openai.images.generate({
-        model: "gpt-image-1",
+        model: "gpt-image-1.5",
         prompt: prompt,
         n: 1,
         size: shape as any,
@@ -118,7 +118,7 @@ export const generateImageWithInputImages = async (prompt: string, inputImages: 
   const img = await openai.images.edit({
     image: preparedImages,
     prompt: prompt,
-    model: "gpt-image-1",
+    model: "gpt-image-1.5",
     n: 1,
     quality: quality,
     size: shape as any,
