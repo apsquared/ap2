@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { getAssessorUrl } from '../county-assessor-urls';
 
 interface PropertyInputs {
   // Property Info
@@ -27,6 +28,7 @@ interface PropertyInputs {
   
   // Setup & Tax
   furnishingsAmount: number;
+  landValuePercent: number;
   bonusDepreciationPercent: number;
   marginalTaxRate: number;
 }
@@ -39,6 +41,7 @@ interface PropertyInfo {
   listingPrice?: string;
   lotSize?: string;
   livingSpace?: string;
+  county?: string;
   otherDetails?: string;
   positives?: string[];
   negatives?: string[];
@@ -69,6 +72,7 @@ const DEFAULT_VALUES: PropertyInputs = {
   
   // Setup & Tax
   furnishingsAmount: 30000,
+  landValuePercent: 0,
   bonusDepreciationPercent: 20,
   marginalTaxRate: 37,
 };
@@ -77,8 +81,13 @@ export default function STRAnalyzerPage() {
   const [inputs, setInputs] = useState<PropertyInputs>(DEFAULT_VALUES);
   const [propertyInfo, setPropertyInfo] = useState<PropertyInfo | null>(null);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [isLoadingTaxInfo, setIsLoadingTaxInfo] = useState(false);
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState<string | null>(null);
   const [instructionsExpanded, setInstructionsExpanded] = useState(false);
+  const [landValueModalOpen, setLandValueModalOpen] = useState(false);
+  const [modalLandValue, setModalLandValue] = useState<number>(0);
+  const [modalBuildingValue, setModalBuildingValue] = useState<number>(0);
   const insuranceManuallyEdited = useRef(false);
   const propertyTaxManuallyEdited = useRef(false);
   const furnishingsManuallyEdited = useRef(false);
@@ -132,7 +141,19 @@ export default function STRAnalyzerPage() {
   const handleInputChange = (field: keyof PropertyInputs, value: string) => {
     // Handle string fields (like propertyAddress)
     if (field === 'propertyAddress') {
-      setInputs(prev => ({ ...prev, [field]: value }));
+      setInputs(prev => {
+        // If address is changing, clear purchase price, occupancy, and ADR
+        if (prev.propertyAddress !== value) {
+          return {
+            ...prev,
+            [field]: value,
+            purchasePrice: 0,
+            occupancyPercent: 0,
+            expectedADR: 0,
+          };
+        }
+        return { ...prev, [field]: value };
+      });
       return;
     }
     
@@ -162,9 +183,10 @@ export default function STRAnalyzerPage() {
       return;
     }
 
+    setUpdateMessage(null);
     setIsLoadingAI(true);
     try {
-      const response = await fetch('https://n8n.apsquared.co/webhook/72dda0e1-882d-4389-bccd-eec1022012db', {
+      const response = await fetch('/api/realestate/load-with-ai', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -175,7 +197,8 @@ export default function STRAnalyzerPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to load property data');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to load property data');
       }
 
       // Get response data
@@ -187,18 +210,28 @@ export default function STRAnalyzerPage() {
       // Extract output data
       const output = data?.output;
       if (output) {
+        const updatedFields: string[] = [];
+        
         // Parse listingPrice (remove $ and commas, convert to number)
         let purchasePrice = inputs.purchasePrice;
         if (output.listingPrice) {
           const priceString = output.listingPrice.replace(/[$,]/g, '');
-          purchasePrice = parseFloat(priceString) || inputs.purchasePrice;
+          const newPrice = parseFloat(priceString) || inputs.purchasePrice;
+          if (newPrice !== inputs.purchasePrice) {
+            purchasePrice = newPrice;
+            updatedFields.push('Purchase Price');
+          }
         }
         
         // Calculate annualUtilities based on number of bedrooms (1250 per bedroom)
         let annualUtilities = inputs.annualUtilities;
         if (output.numBedrooms && typeof output.numBedrooms === 'number') {
           if (!utilitiesManuallyEdited.current) {
-            annualUtilities = 1250 * output.numBedrooms;
+            const newUtilities = 1250 * output.numBedrooms;
+            if (newUtilities !== inputs.annualUtilities) {
+              annualUtilities = newUtilities;
+              updatedFields.push('Annual Utilities');
+            }
           }
         }
         
@@ -206,9 +239,30 @@ export default function STRAnalyzerPage() {
         let furnishingsAmount = inputs.furnishingsAmount;
         if (output.numBedrooms && typeof output.numBedrooms === 'number') {
           if (!furnishingsManuallyEdited.current) {
-            furnishingsAmount = 10000 * output.numBedrooms;
+            const newFurnishings = 10000 * output.numBedrooms;
+            if (newFurnishings !== inputs.furnishingsAmount) {
+              furnishingsAmount = newFurnishings;
+              updatedFields.push('Furnishings Cost');
+            }
           }
         }
+        
+        // Check for other field updates
+        if (output.propertyAddress && output.propertyAddress !== inputs.propertyAddress) {
+          updatedFields.push('Property Address');
+        }
+        if (output.shortLifeAssetPercentage && output.shortLifeAssetPercentage !== inputs.bonusDepreciationPercent) {
+          updatedFields.push('Bonus Depreciation %');
+        }
+        
+        // Track property info updates
+        const propertyInfoUpdates: string[] = [];
+        if (output.yearBuilt) propertyInfoUpdates.push('Year Built');
+        if (output.numBedrooms !== undefined) propertyInfoUpdates.push('Bedrooms');
+        if (output.numBathrooms !== undefined) propertyInfoUpdates.push('Bathrooms');
+        if (output.listingPrice) propertyInfoUpdates.push('Listing Price');
+        if (output.lotSize) propertyInfoUpdates.push('Lot Size');
+        if (output.livingSpace) propertyInfoUpdates.push('Living Space');
         
         // Map response to inputs
         setInputs(prev => ({
@@ -233,6 +287,13 @@ export default function STRAnalyzerPage() {
           positives: output.positives,
           negatives: output.negatives,
         });
+        
+        // Show update message
+        const allUpdatedFields = [...updatedFields, ...propertyInfoUpdates];
+        if (allUpdatedFields.length > 0) {
+          setUpdateMessage(`Updated fields: ${allUpdatedFields.join(', ')}`);
+          setTimeout(() => setUpdateMessage(null), 5000);
+        }
       }
       
     } catch (error) {
@@ -243,12 +304,161 @@ export default function STRAnalyzerPage() {
     }
   };
 
+  const handleLoadTaxInfo = async () => {
+    if (!inputs.propertyAddress.trim()) {
+      alert('Please enter a property address');
+      return;
+    }
+
+    setUpdateMessage(null);
+    setIsLoadingTaxInfo(true);
+    try {
+      const response = await fetch('/api/realestate/load-tax-info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          address: inputs.propertyAddress,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to load tax info');
+      }
+
+      // Get response data (array with one result)
+      const data = await response.json();
+      
+      // Print response to console
+      console.log('Tax Info Webhook Response:', data);
+      
+      // Extract the first (and only) result from the array
+      let taxData:any = null;
+      if (Array.isArray(data) && data.length > 0) {
+        taxData = data[0];
+      } else if (data && typeof data === 'object') {
+        taxData = data;
+      }
+      
+      if (taxData) {
+        const updatedFields: string[] = [];
+        const propertyInfoUpdates: string[] = [];
+        
+        // Calculate landValuePercent from most recent tax assessment
+        let landValuePercent = inputs.landValuePercent;
+        if (taxData.landValuePerc && typeof taxData.landValuePerc === 'number') {
+          console.log('Land Value Percent:', taxData.landValuePerc);
+          const newLandValuePercent = taxData.landValuePerc * 100;
+          if (newLandValuePercent !== inputs.landValuePercent) {
+            landValuePercent = newLandValuePercent;
+            updatedFields.push('Land Value %');
+          }
+        }
+        
+        // Set annualPropertyTax from recentTaxes
+        let annualPropertyTax = inputs.annualPropertyTax;
+        if (taxData.recentTaxes && typeof taxData.recentTaxes === 'number') {
+          if (!propertyTaxManuallyEdited.current) {
+            if (taxData.recentTaxes !== inputs.annualPropertyTax) {
+              annualPropertyTax = taxData.recentTaxes;
+              updatedFields.push('Annual Property Tax');
+            }
+          }
+        }
+        
+        // Calculate utilities and furnishings based on bedrooms
+        let annualUtilities = inputs.annualUtilities;
+        let furnishingsAmount = inputs.furnishingsAmount;
+        if (taxData.bedrooms && typeof taxData.bedrooms === 'number') {
+          if (!utilitiesManuallyEdited.current) {
+            const newUtilities = 1250 * taxData.bedrooms;
+            if (newUtilities !== inputs.annualUtilities) {
+              annualUtilities = newUtilities;
+              updatedFields.push('Annual Utilities');
+            }
+          }
+          if (!furnishingsManuallyEdited.current) {
+            const newFurnishings = 10000 * taxData.bedrooms;
+            if (newFurnishings !== inputs.furnishingsAmount) {
+              furnishingsAmount = newFurnishings;
+              updatedFields.push('Furnishings Cost');
+            }
+          }
+        }
+        
+        // Track property info updates
+        if (taxData.yearBuilt && taxData.yearBuilt.toString() !== propertyInfo?.yearBuilt) {
+          propertyInfoUpdates.push('Year Built');
+        }
+        if (taxData.bedrooms !== undefined && taxData.bedrooms !== propertyInfo?.numBedrooms) {
+          propertyInfoUpdates.push('Bedrooms');
+        }
+        if (taxData.bathrooms !== undefined && taxData.bathrooms !== propertyInfo?.numBathrooms) {
+          propertyInfoUpdates.push('Bathrooms');
+        }
+        if (taxData.lotSize && taxData.lotSize.toString() !== propertyInfo?.lotSize) {
+          propertyInfoUpdates.push('Lot Size');
+        }
+        if (taxData.squareFootage && taxData.squareFootage.toString() !== propertyInfo?.livingSpace) {
+          propertyInfoUpdates.push('Living Space');
+        }
+        if (taxData.county && taxData.county !== propertyInfo?.county) {
+          propertyInfoUpdates.push('County');
+        }
+        
+        // Update inputs
+        setInputs(prev => ({
+          ...prev,
+          landValuePercent: landValuePercent,
+          annualPropertyTax: annualPropertyTax,
+          annualUtilities: annualUtilities,
+          furnishingsAmount: furnishingsAmount,
+        }));
+        
+        // Update property info for display
+        setPropertyInfo(prev => ({
+          ...prev,
+          yearBuilt: taxData.yearBuilt ? taxData.yearBuilt.toString() : prev?.yearBuilt,
+          numBedrooms: taxData.bedrooms ?? prev?.numBedrooms,
+          numBathrooms: taxData.bathrooms ?? prev?.numBathrooms,
+          lotSize: taxData.lotSize ? taxData.lotSize.toString() : prev?.lotSize,
+          livingSpace: taxData.squareFootage ? taxData.squareFootage.toString() : prev?.livingSpace,
+          county: taxData.county ?? prev?.county,
+        }));
+        
+        // Show update message
+        const allUpdatedFields = [...updatedFields, ...propertyInfoUpdates];
+        if (allUpdatedFields.length > 0) {
+          setUpdateMessage(`Updated fields: ${allUpdatedFields.join(', ')}`);
+          setTimeout(() => setUpdateMessage(null), 5000);
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error loading tax info:', error);
+      alert('Failed to load tax info. Please try again.');
+    } finally {
+      setIsLoadingTaxInfo(false);
+    }
+  };
+
   const calculateRepairsFromRevenue = () => {
     // Calculate GAV (Gross Revenue)
     const gav = inputs.expectedADR * 365 * (inputs.occupancyPercent / 100);
     // Calculate 4% of GAV
     const calculatedRepairs = gav * 0.04;
     setInputs(prev => ({ ...prev, annualRepairsCapEx: calculatedRepairs }));
+  };
+
+  const handleCalculateLandValuePercent = () => {
+    const totalValue = modalLandValue + modalBuildingValue;
+    if (totalValue > 0) {
+      const calculatedPercent = (modalLandValue / totalValue) * 100;
+      setInputs(prev => ({ ...prev, landValuePercent: calculatedPercent }));
+      setLandValueModalOpen(false);
+    }
   };
 
   const calculateResults = () => {
@@ -306,8 +516,8 @@ export default function STRAnalyzerPage() {
     // Cash-on-Cash Return = Cash Flow ÷ Total Cash In
     const cashOnCashReturn = totalCashIn > 0 ? (cashFlow / totalCashIn) * 100 : 0;
     
-    // Bonus Depreciation Amount (Year 1) = Purchase Price × Bonus Depreciation %
-    const bonusDepreciationAmount = inputs.purchasePrice * (inputs.bonusDepreciationPercent / 100);
+    // Bonus Depreciation Amount (Year 1) = Purchase Price × (1 - Land Value %) × Bonus Depreciation %
+    const bonusDepreciationAmount = inputs.purchasePrice * (1 - inputs.landValuePercent / 100) * (inputs.bonusDepreciationPercent / 100);
     
     // Estimated Tax Savings (Year 1) = Bonus Depreciation × Marginal Tax Rate
     const estimatedTaxSavings = bonusDepreciationAmount * (inputs.marginalTaxRate / 100);
@@ -383,6 +593,8 @@ export default function STRAnalyzerPage() {
       formatPercent(results.capRate),
       formatPercent(inputs.occupancyPercent),
       formatADR(inputs.expectedADR),
+      formatPercent(inputs.landValuePercent),
+      formatPercent(inputs.bonusDepreciationPercent),
     ].join('\t'); // Tab-separated for spreadsheet compatibility
 
     try {
@@ -506,22 +718,42 @@ export default function STRAnalyzerPage() {
                 <span className="mr-2">📍</span>
                 Property Information
               </h2>
-              <div className="flex gap-2">
+              <div className="space-y-2">
                 <input
                   type="text"
                   value={inputs.propertyAddress}
                   onChange={(e) => handleInputChange('propertyAddress', e.target.value)}
                   placeholder="Enter property address"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                <button
-                  type="button"
-                  onClick={handleLoadWithAI}
-                  disabled={isLoadingAI || !inputs.propertyAddress.trim()}
-                  className="px-6 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
-                  {isLoadingAI ? 'Loading...' : 'Load With AI'}
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleLoadWithAI}
+                    disabled={isLoadingAI || isLoadingTaxInfo || !inputs.propertyAddress.trim()}
+                    className="px-6 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    {isLoadingAI ? 'Loading...' : 'Load With AI'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleLoadTaxInfo}
+                    disabled={isLoadingAI || isLoadingTaxInfo || !inputs.propertyAddress.trim()}
+                    className="px-6 py-2 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    {isLoadingTaxInfo ? 'Loading...' : 'Load Tax Info'}
+                  </button>
+                </div>
+                {updateMessage && (
+                  <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-sm text-green-800 flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {updateMessage}
+                    </p>
+                  </div>
+                )}
               </div>
               {inputs.propertyAddress && (
                 <div className="mt-2">
@@ -582,6 +814,23 @@ export default function STRAnalyzerPage() {
                     <div>
                       <div className="text-gray-600 font-medium">Living Space</div>
                       <div className="text-gray-900">{propertyInfo.livingSpace}</div>
+                    </div>
+                  )}
+                  {propertyInfo.county && (
+                    <div>
+                      <div className="text-gray-600 font-medium">County</div>
+                      {getAssessorUrl(propertyInfo.county) ? (
+                        <a
+                          href={getAssessorUrl(propertyInfo.county)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {propertyInfo.county}
+                        </a>
+                      ) : (
+                        <div className="text-gray-900">{propertyInfo.county}</div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -814,6 +1063,35 @@ export default function STRAnalyzerPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <p className="text-xs text-gray-500 mt-1">Estimate: $10,000 per bedroom</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+                    Land Value %
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setModalLandValue(0);
+                        setModalBuildingValue(0);
+                        setLandValueModalOpen(true);
+                      }}
+                      className="text-blue-500 hover:text-blue-700 focus:outline-none"
+                      aria-label="Calculate land value percentage"
+                      title="Calculate from land and building values"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  </label>
+                  <input
+                    type="number"
+                    value={inputs.landValuePercent || ''}
+                    onChange={(e) => handleInputChange('landValuePercent', e.target.value)}
+                    placeholder="0"
+                    step="0.1"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Percentage of purchase price allocated to land (not depreciable)</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
@@ -1070,7 +1348,7 @@ export default function STRAnalyzerPage() {
                   <div>
                     <div className="text-gray-600">Bonus Depreciation (Year 1)</div>
                     <div className="font-semibold text-gray-900">{formatCurrency(results.bonusDepreciationAmount)}</div>
-                    <p className="text-xs text-gray-500 mt-0.5">Purchase Price × Bonus Depreciation %</p>
+                    <p className="text-xs text-gray-500 mt-0.5">Purchase Price × (1 - Land Value %) × Bonus Depreciation %</p>
                   </div>
                   <div>
                     <div className="text-gray-600">Estimated Tax Savings (Year 1)</div>
@@ -1097,6 +1375,78 @@ export default function STRAnalyzerPage() {
           </div>
         </div>
       </div>
+
+      {/* Land Value Calculator Modal */}
+      {landValueModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setLandValueModalOpen(false)}>
+          <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-gray-800">Calculate Land Value %</h3>
+              <button
+                type="button"
+                onClick={() => setLandValueModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                aria-label="Close modal"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Land Value
+                </label>
+                <input
+                  type="number"
+                  value={modalLandValue || ''}
+                  onChange={(e) => setModalLandValue(parseFloat(e.target.value) || 0)}
+                  placeholder="0"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Building Value
+                </label>
+                <input
+                  type="number"
+                  value={modalBuildingValue || ''}
+                  onChange={(e) => setModalBuildingValue(parseFloat(e.target.value) || 0)}
+                  placeholder="0"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              {modalLandValue + modalBuildingValue > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div className="text-sm text-gray-600 mb-1">Calculated Land Value %</div>
+                  <div className="text-lg font-semibold text-blue-700">
+                    {((modalLandValue / (modalLandValue + modalBuildingValue)) * 100).toFixed(2)}%
+                  </div>
+                </div>
+              )}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={handleCalculateLandValuePercent}
+                  disabled={modalLandValue + modalBuildingValue <= 0}
+                  className="flex-1 px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  Apply
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLandValueModalOpen(false)}
+                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

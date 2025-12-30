@@ -195,3 +195,18 @@ Add your agent to the appropriate navigation menu or tool list in the site's nav
 6. Add loading states and error states
 7. Consider adding unit tests for critical functionality
 
+## Environment Variables
+
+### Real Estate STR Analyzer
+
+The STR Analyzer requires the following environment variables to be set:
+
+```env
+N8N_WEBHOOK_AI_URL=https://n8n.apsquared.co/webhook/your-ai-webhook-id
+N8N_WEBHOOK_TAX_URL=https://n8n.apsquared.co/webhook/your-tax-webhook-id
+```
+
+These variables should be added to your `.env.local` file for local development, or configured in your deployment environment (Vercel, etc.).
+
+**Note:** These webhook URLs are kept server-side for security. The client-side code calls internal API routes (`/api/realestate/load-with-ai` and `/api/realestate/load-tax-info`) which then proxy the requests to n8n.
+
