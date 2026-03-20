@@ -73,10 +73,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </svg>
           </a>
           </div>
-          <div className="flex space-x-4 pb-4 sm:pb-0">
-            <a href="https://www.tvfoodmaps.com">TVFoodMaps</a>     
-            <a href="https://www.bargpt.app">BarGPT</a>   
+          <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center sm:justify-end pb-4 sm:pb-0">
+            <a href="https://www.tvfoodmaps.com">TVFoodMaps</a>
+            <a href="https://www.bargpt.app">BarGPT</a>
             <a href="https://www.legallyvibing.com">Legally Vibing</a>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
           </div>
           </footer>
           </div>
