@@ -50,10 +50,12 @@ export default async function PagePage({ params }: PageProps) {
   }
 
   return (
-    <article className="py-6 prose dark:prose-invert">
-      <h1>{page.title}</h1>
-      {page.description && <p className="text-xl">{page.description}</p>}
-      <hr />
+    <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12 prose dark:prose-invert prose-headings:font-display prose-headings:tracking-tight prose-a:text-indigo-500 dark:prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:underline animate-fade-up">
+      <div className="not-prose mb-8">
+        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1]">{page.title}</h1>
+        {page.description && <p className="mt-4 text-lg text-muted leading-relaxed">{page.description}</p>}
+        <div className="mt-6 h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
+      </div>
       <Mdx code={page.body.code} />
     </article>
   )

@@ -61,14 +61,16 @@ export default async function PostPage({ params }: PostProps) {
   }
 
   return (
-    <article className="py-6 w-full prose dark:prose-invert max-w-none ">
-      <h1 className="mb-2">{post.title}</h1>
-      {post.description && (
-        <p className="text-xl mt-0 text-slate-700 dark:text-slate-200">
-          {post.description}
-        </p>
-      )}
-      <hr className="my-4" />
+    <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12 prose dark:prose-invert prose-headings:font-display prose-headings:tracking-tight prose-a:text-indigo-500 dark:prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl animate-fade-up">
+      <div className="not-prose mb-8">
+        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1]">{post.title}</h1>
+        {post.description && (
+          <p className="mt-4 text-lg text-muted leading-relaxed">
+            {post.description}
+          </p>
+        )}
+        <div className="mt-6 h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
+      </div>
       <Mdx code={post.body.code} />
     </article>
   )
