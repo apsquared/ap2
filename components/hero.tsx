@@ -9,12 +9,12 @@ export function Hero() {
         APSquared · building in public
       </div>
       <h1 className="mt-6 font-display text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.05]">
-        Small studio. <br className="hidden sm:block" />
-        <span className="gradient-text">Big swings.</span>
+        Make things. <br className="hidden sm:block" />
+        <span className="gradient-text">Ship them. Repeat.</span>
       </h1>
       <p className="mt-6 max-w-2xl mx-auto text-lg text-muted leading-relaxed">
-        APSquared designs, builds, and ships products in public — from cocktail AI to startup-idea
-        validation. Watch what we&apos;re making and steal the ideas.
+        Two brothers building useful products in the open — from AI tools to launch experiments.
+        Follow the process and take the ideas that fit.
       </p>
       <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
         <a

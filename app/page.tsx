@@ -1,6 +1,6 @@
 import { allPosts } from "@/.contentlayer/generated"
 import Link from "next/link"
-import { ArrowRight, ArrowUpRight, Beer, Map, Leaf, Rocket } from "lucide-react"
+import { ArrowRight, ArrowUpRight, Beer, Map, Leaf, Rocket, Home as HomeIcon } from "lucide-react"
 import { Hero } from "@/components/hero"
 import { ProductCard } from "@/components/product-card"
 import { PostCard } from "@/components/post-card"
@@ -26,6 +26,13 @@ const products = [
     href: "https://www.legallyvibing.com",
     accent: "from-emerald-400 to-teal-500",
     icon: <Leaf className="h-5 w-5" />,
+  },
+  {
+    name: "FindMyBnB",
+    description: "Find your perfect short-term rental — search and discover vacation stays that fit.",
+    href: "https://www.findmybnb.co",
+    accent: "from-sky-400 to-indigo-500",
+    icon: <HomeIcon className="h-5 w-5" />,
   },
 ]
 
