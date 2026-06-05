@@ -1,6 +1,6 @@
 import { allPosts } from "@/.contentlayer/generated"
 import Link from "next/link"
-import { ArrowRight, ArrowUpRight, Beer, Map, Leaf, Rocket, Home as HomeIcon } from "lucide-react"
+import { ArrowRight, ArrowUpRight, Beer, Map, Leaf, Rocket, Home as HomeIcon, Type } from "lucide-react"
 import { Hero } from "@/components/hero"
 import { ProductCard } from "@/components/product-card"
 import { PostCard } from "@/components/post-card"
@@ -33,6 +33,13 @@ const products = [
     href: "https://www.findmybnb.co",
     accent: "from-sky-400 to-indigo-500",
     icon: <HomeIcon className="h-5 w-5" />,
+  },
+  {
+    name: "WordSmash",
+    description: "A fast-paced word game — smash letters into words and climb the leaderboard.",
+    href: "https://wordsmash.apsquared.co",
+    accent: "from-violet-400 to-fuchsia-500",
+    icon: <Type className="h-5 w-5" />,
   },
 ]
 
