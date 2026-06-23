@@ -35,3 +35,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .contentlayer
+# Claude Code local settings
+.claude/settings.local.json
