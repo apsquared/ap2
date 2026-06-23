@@ -7,6 +7,13 @@ import { PostCard } from "@/components/post-card"
 
 const products = [
   {
+    name: "Idea Launch",
+    description: "Get your idea in front of real strangers before you build the MVP.",
+    href: "https://idea-launch.io",
+    accent: "from-orange-400 to-red-500",
+    icon: <Rocket className="h-5 w-5" />,
+  },
+  {
     name: "BarGPT",
     description: "AI cocktail generator. 3,000+ users have shaken up 17,000+ unique cocktails.",
     href: "https://www.bargpt.app",
