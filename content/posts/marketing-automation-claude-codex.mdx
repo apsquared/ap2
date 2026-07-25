@@ -1,0 +1,126 @@
+---
+title: How We Automate Marketing for 7 Projects on $40/Month — Claude + Codex
+description: Inside APSquared's two-assistant marketing machine. Each project gets its own self-contained AI marketing agent, split between Claude and Codex, and the whole operation runs on two $20 subscriptions.
+date: "2026-07-25"
+image: https://apsquared.co/og-marketing-agent.png
+---
+
+Running a portfolio of small products has one brutal, recurring cost that never shows up on a server bill: **marketing every one of them, forever.**
+
+At [APSquared](https://apsquared.co) we ship a lot of little bets — [BarGPT](https://www.bargpt.app), [TVFoodMaps](https://www.tvfoodmaps.com), [Legally Vibing](https://www.legallyvibing.com), [Idea Launch](https://idea-launch.io), [FindMyBnB](https://www.findmybnb.co), [WordSmash](https://wordsmash.apsquared.co), and this site itself. Seven products. Each one needs social posts, SEO pages, directory submissions, and someone paying attention to what's working. That's a full-time marketing job I don't have time to do and can't afford to hire for.
+
+So I automated it. The entire marketing operation for all seven projects runs on **two AI coding assistants and a combined $40/month** — a $20 Claude plan and a $20 Codex plan. No agency, no marketing SaaS stack, no per-seat automation platform.
+
+Here's how it actually works.
+
+![AP2 marketing agent architecture](https://apsquared.co/og-marketing-agent.png)
+
+---
+
+## 🧠 The core idea: one self-contained agent per repo
+
+The mistake most people make with "AI marketing automation" is building one giant brain that tries to know everything about every product. It hallucinates, it mixes up your projects, and it drifts.
+
+We do the opposite. **Every project carries its own marketing agent inside its own repo.** Nothing is centralized. A project's agent is just two things living next to the code:
+
+- **`marketing/AGENT.md`** — the brain. Product facts, brand voice, target channels, budgets, seasonal hooks, and the social account IDs for that specific product. This is the *only* source of truth the agent is allowed to use.
+- **`marketing/logs/`** — the memory. What's been posted, which keywords have been used, which directories have been submitted, and a running activity log.
+
+Plus a `marketing/TASKS.md` file — the human queue, for anything that needs *me* (more on that below).
+
+The rule that makes it work: **an agent never reads outside its own repo at runtime.** BarGPT's agent knows nothing about TVFoodMaps. It can't invent a metric, borrow another product's voice, or post to the wrong account, because it literally can't see them. Account IDs and directory seeds get copied in once at setup time, and after that the agent is sealed in its own world.
+
+---
+
+## 🔁 One run = one activity
+
+Each marketing run does exactly **one** thing. Not "do marketing" — one specific activity type:
+
+- **social** — write 2–3 posts and schedule them for *tomorrow* via [Post Bridge](https://post-bridge.com), never same-day, so there's always a review window.
+- **pseo** — generate a batch of 3–5 programmatic-SEO pages, each targeting a distinct keyword, through the repo's real content system.
+- **blog** — write one substantive article (like this one).
+- **directory** — prepare a full submission package for a high-value directory.
+- **engagement** — sweep Reddit/X for genuinely relevant threads and draft helpful, non-promotional replies.
+
+The agent picks the activity with the **longest gap since it last ran** — a dead-simple rotation that keeps every channel warm without me scheduling anything. Then it applies don't-repeat rules against its own logs: no topic from the last 20 posts, no keyword already in the content ledger, no directory already prepared. The memory files aren't decoration — they're what stops the agent from posting the same thing twice.
+
+Every run ends the same way: log it, commit content and marketing-state changes *separately*, and push.
+
+---
+
+## 📡 How the posts actually go out: Post Bridge
+
+Writing a good post is only half the job — the other half is getting it onto X, Instagram, TikTok, and Facebook without me touching four different apps. That's where [Post Bridge](https://post-bridge.com) does the heavy lifting.
+
+Post Bridge is a single API/CLI that fans one post out to every connected account. We connected each product's social accounts once, and the agent references them by numeric **account ID** — every project's `AGENT.md` holds its own list, so BarGPT's agent posts to BarGPT's X, Instagram, and Facebook, and nothing else. When a social run finishes, it schedules each post with a one-liner:
+
+```
+npx postbridge-cli post --caption "<text>" --accounts <ids> --schedule "<ISO UTC>"
+```
+
+A few details that make this reliable instead of chaotic:
+
+- **Always scheduled, never blasted.** Posts go out for *tomorrow* at roughly 9am / 1pm / 6pm Eastern (converted to UTC, with a little jitter so they don't look robotic). That built-in delay is my review window — I can kill or edit anything before it publishes.
+- **Platform-aware media.** Instagram and Facebook refuse text-only posts, so the agent feeds them an image — usually one of the site's own dynamic OG-image routes as the media URL. X can go text-only. If an image can't be produced, it posts the text-only channels and files a task instead of failing the whole run.
+- **Every post is logged with its Post Bridge ID.** The response ID goes straight into `post-log.md`, which is also what the don't-repeat rules read from — so the same scheduling tool doubles as the memory that stops duplicate posts.
+- **One flat fee, all accounts.** Post Bridge is the same modest cost whether it's one product or seven, so adding a project to the fleet adds $0 to the social bill.
+
+The result: one CLI call per post, one review window, one log line — across every platform and every product.
+
+---
+
+## 🤝 Why two assistants — Claude *and* Codex
+
+This is the part people find odd. Why pay for two AI subscriptions instead of going all-in on one?
+
+Because a portfolio is a load-balancing problem. Each $20 plan has usage limits, and running seven products' worth of content generation through a single account hits those ceilings fast. Splitting the fleet across two assistants doubles the runway for the price of a second lunch out.
+
+So we split the roster:
+
+| Assistant | Projects |
+|---|---|
+| **Claude** | Idea Launch, FindMyBnB, WordSmash, AP2 (this site) |
+| **Codex** | BarGPT, TVFoodMaps, Legally Vibing |
+
+Each project's row in our internal tracker literally has a "Marketing Workflow" column naming which assistant drives it. The agent framework is identical either way — same `marketing/` structure, same run loop, same logs — so a project can move between assistants without changing anything. The assistant is just the engine; the agent lives in the repo.
+
+The nice side effect: they keep each other honest. The same framework producing similar-quality output from two different models is a decent signal that the *system* is doing the work, not one model's magic.
+
+---
+
+## 🙋 The human stays in the loop — on purpose
+
+Full autonomy is a trap. There are things an AI agent absolutely should not do unsupervised: post from *my* accounts without review, submit to a directory using my name, publish something factually wrong about a product.
+
+So the agents don't. Anything that needs my hands or my accounts gets **filed as a task**, not executed. A social run schedules posts for the next day and stops. A directory run writes the entire submission — name, tagline, 50-word description, category, logo path — and drops it in `TASKS.md` with the exact submission URL, ready for me to paste and click. An engagement run drafts the replies but never posts them.
+
+I have a separate little skill that sweeps every project's `TASKS.md` into one MongoDB-backed dashboard, so my whole cross-project to-do list is in one place. My actual daily job shrinks to: skim tomorrow's scheduled posts, and clear a short queue of copy-paste tasks. Ten minutes, not ten hours.
+
+---
+
+## 💸 The real cost
+
+Let's add it up honestly:
+
+- **Claude plan:** $20/month
+- **Codex plan:** $20/month
+- **Post Bridge** (social scheduling): a modest flat fee, shared across all accounts
+- **Everything else** — the agents, the logs, the rotation logic, the task queue: **$0.** It's just markdown files and skills committed into repos I already own.
+
+**~$40/month to keep seven products marketed.** For comparison, a *single* marketing automation SaaS seat or one freelance content gig usually costs more than that per project.
+
+The leverage isn't that AI writes tweets. It's that the *system* — self-contained agents, one-activity runs, don't-repeat memory, human-in-the-loop task filing — turns two cheap subscriptions into something that behaves like a small, tireless marketing team that never mixes up which product it's working on.
+
+---
+
+## 🛠️ Takeaways if you want to build your own
+
+1. **One agent per product, sealed to its own repo.** Isolation kills hallucination and cross-contamination.
+2. **One activity per run.** "Do marketing" is too vague to be good; "write 3 posts" is a task an agent can nail.
+3. **Give it memory it must respect.** Logs that enforce don't-repeat rules are what separate automation from spam.
+4. **File tasks, don't fire actions.** Keep the human on anything irreversible or account-bound.
+5. **Load-balance across assistants.** Two $20 plans go a lot further than one when you're running a portfolio.
+
+We're still stamping this framework out across the full roster, but the shape is proven: cheap, boring, repeatable, and it works while I'm asleep.
+
+If you're building something similar — or just want to see it running — poke around the [APSquared projects](https://apsquared.co). Every one of them is being marketed, right now, by an agent that only knows about itself.
