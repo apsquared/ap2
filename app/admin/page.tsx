@@ -1,4 +1,4 @@
-import { getMarketingTasks } from '@/utils/db/marketingTasks';
+import { getMarketingTasks, type MarketingTask } from '@/utils/db/marketingTasks';
 import TasksBoard from './TasksBoard';
 import LogoutButton from './LogoutButton';
 
@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function AdminTasksPage() {
-  let tasks;
+  let tasks: MarketingTask[] = [];
   let error: string | null = null;
   try {
     tasks = await getMarketingTasks();
