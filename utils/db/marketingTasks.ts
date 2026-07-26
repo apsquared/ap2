@@ -3,6 +3,7 @@ import {
   MARKETING_TASKS_DB,
   MARKETING_TASKS_COLLECTION,
   normalizeAssignee,
+  normalizeResolution,
   type MarketingTask,
 } from './marketingTasksShared';
 
@@ -37,6 +38,9 @@ export async function getMarketingTasks(): Promise<MarketingTask[]> {
     materials: d.materials ?? '',
     status: d.status ?? 'open',
     assignedTo: normalizeAssignee(d.assignedTo),
+    resolution: normalizeResolution(d.resolution),
+    resolvedBy: normalizeAssignee(d.resolvedBy),
+    resolvedAt: d.resolvedAt ? new Date(d.resolvedAt).toISOString() : undefined,
     checked: Boolean(d.checked),
     firstSeenAt: d.firstSeenAt ? new Date(d.firstSeenAt).toISOString() : undefined,
     lastSweptAt: d.lastSweptAt ? new Date(d.lastSweptAt).toISOString() : undefined,

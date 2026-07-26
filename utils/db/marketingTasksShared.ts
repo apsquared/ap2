@@ -21,6 +21,18 @@ export function normalizeAssignee(value: unknown): Assignee {
     : '';
 }
 
+// Admin-controlled resolution, stored only in Mongo and never written by the
+// sweeper, so it survives re-sweeps. '' = unresolved (still to do).
+export const RESOLUTIONS = ['completed', 'skipped'] as const;
+export type Resolution = (typeof RESOLUTIONS)[number] | '';
+
+/** Validate/normalize an incoming resolution value; anything else → '' (to do). */
+export function normalizeResolution(value: unknown): Resolution {
+  return (RESOLUTIONS as readonly string[]).includes(value as string)
+    ? (value as Resolution)
+    : '';
+}
+
 export interface MarketingTask {
   _id: string;
   project: string;
@@ -36,6 +48,9 @@ export interface MarketingTask {
   materials: string;
   status: TaskStatus;
   assignedTo: Assignee;
+  resolution: Resolution;
+  resolvedBy?: Assignee;
+  resolvedAt?: string;
   checked?: boolean;
   firstSeenAt?: string;
   lastSweptAt?: string;
