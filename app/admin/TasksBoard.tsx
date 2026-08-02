@@ -23,6 +23,109 @@ function effStatus(t: MarketingTask): EffStatus {
   return 'open';
 }
 
+// A draft is introduced by a label that ends in a colon and is immediately
+// followed by the opening quote — "Reply:", "DM <name> (<context>):",
+// "Draft reply (post as-is…):", "Suggested first touch:", "New issue to X:".
+const DRAFT_LABEL = /\b(?:reply|dm|draft reply|suggested first touch|new issue|message|comment)\b[^:\n]{0,80}:\s*(?=["“])/gi;
+
+/**
+ * Pull the draft message out of an outreach task's materials.
+ *
+ * The agents write drafts as a labelled, quoted block, usually with context
+ * before it ("Why it fits: …") and a caveat after it ("Note: …"). Straight
+ * quotes also appear *inside* the draft, so pairing quotes up is unreliable —
+ * anchor on the last draft label and take the outermost span after it.
+ * Returns null when there is nothing that looks like a quoted message.
+ */
+function extractOutreachMessage(materials: string): string | null {
+  const text = (materials || '').trim();
+
+  // Last label wins: the surrounding context can quote the thread it replies to.
+  let labelEnd = -1;
+  DRAFT_LABEL.lastIndex = 0;
+  for (let m = DRAFT_LABEL.exec(text); m; m = DRAFT_LABEL.exec(text)) {
+    labelEnd = m.index + m[0].length;
+  }
+
+  const first = labelEnd >= 0 ? labelEnd : text.search(/["“]/);
+  if (first < 0) return null;
+  let last = -1;
+  for (let i = text.length - 1; i > first; i--) {
+    if (text[i] === '"' || text[i] === '”') {
+      last = i;
+      break;
+    }
+  }
+  if (last <= first) return null;
+  // Drafts are indented under a bullet; strip that so the paste is clean.
+  const message = text
+    .slice(first + 1, last)
+    .split('\n')
+    .map((line) => line.trim())
+    .join('\n')
+    .trim();
+  return message || null;
+}
+
+/**
+ * Clipboard fallback for when the async API is unavailable — an insecure
+ * context (navigator.clipboard undefined) or a denied clipboard-write
+ * permission. Still requires a user gesture, which a click handler satisfies.
+ */
+function legacyCopy(text: string): boolean {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try {
+    ok = document.execCommand('copy');
+  } catch {
+    ok = false;
+  }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function CopyButton({ text, label, title }: { text: string; label: string; title?: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copy(e: React.MouseEvent) {
+    e.stopPropagation();
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      ok = true;
+    } catch {
+      ok = legacyCopy(text);
+    }
+    if (!ok) {
+      alert('Could not copy to the clipboard.');
+      return;
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      title={title}
+      aria-label={label}
+      className={`rounded-lg border bg-black/20 dark:bg-white/5 px-2.5 py-1.5 text-xs font-medium outline-none transition-colors ${
+        copied
+          ? 'border-emerald-500/40 text-emerald-600 dark:text-emerald-300'
+          : 'border-soft text-muted hover:border-indigo-400'
+      }`}
+    >
+      {copied ? '✓ Copied' : label}
+    </button>
+  );
+}
+
 const EFF_LABELS: Record<EffStatus, string> = {
   open: 'To do',
   completed: 'Completed',
@@ -254,6 +357,10 @@ export default function TasksBoard({ tasks }: { tasks: MarketingTask[] }) {
                   const toggle = () => setExpanded((s) => ({ ...s, [t._id]: !s[t._id] }));
                   const eff = effStatus(t);
                   const resolved = eff === 'completed' || eff === 'skipped';
+                  // Outreach tasks carry a draft message meant to be pasted
+                  // into Reddit/X/email; give it a one-click copy.
+                  const message =
+                    t.category === 'outreach' ? extractOutreachMessage(t.materials) : null;
                   return (
                     <div key={t._id} className="glass gradient-border rounded-2xl overflow-hidden">
                       <div className="p-4 flex items-start gap-3">
@@ -287,6 +394,14 @@ export default function TasksBoard({ tasks }: { tasks: MarketingTask[] }) {
                         </div>
 
                         <div className="flex flex-wrap items-center justify-end gap-2 shrink-0">
+                          {message && (
+                            <CopyButton
+                              text={message}
+                              label="Copy message"
+                              title={message}
+                            />
+                          )}
+
                           <label className="sr-only" htmlFor={`resolution-${t._id}`}>
                             Task status
                           </label>
@@ -343,6 +458,17 @@ export default function TasksBoard({ tasks }: { tasks: MarketingTask[] }) {
                             >
                               Open action link ↗
                             </a>
+                          )}
+                          {message && (
+                            <div className="mt-2 rounded-xl border border-soft bg-black/10 dark:bg-white/5 p-3">
+                              <div className="flex items-center justify-between gap-3 mb-2">
+                                <span className="text-[11px] uppercase tracking-wide text-muted">
+                                  Message to send
+                                </span>
+                                <CopyButton text={message} label="Copy" />
+                              </div>
+                              <p className="text-sm whitespace-pre-wrap">{message}</p>
+                            </div>
                           )}
                           {t.materials && (
                             <div className="prose prose-sm dark:prose-invert max-w-none mt-2 border-t border-soft pt-3">
