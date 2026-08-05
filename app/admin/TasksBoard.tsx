@@ -198,6 +198,64 @@ function StatTile({ label, value, accent }: { label: string; value: number; acce
   );
 }
 
+/**
+ * Who gets credit for a completed task: the resolver when the admin recorded
+ * one, otherwise the current assignee (tasks swept as `done` from a repo have
+ * no resolver). Empty string when nobody can be credited.
+ */
+function creditedTo(t: MarketingTask): string {
+  return t.resolvedBy || t.assignedTo || '';
+}
+
+type PersonStats = {
+  name: string;
+  assigned: number; // every task currently assigned to them
+  open: number; // …of those, still to do
+  completed: number; // completions credited to them
+};
+
+const PERSON_ACCENTS: Record<string, string> = {
+  Frank: 'text-indigo-600 dark:text-indigo-300',
+  Mike: 'text-teal-600 dark:text-teal-300',
+};
+
+function PersonCard({ stats }: { stats: PersonStats }) {
+  const { name, assigned, open, completed } = stats;
+  const pct = assigned > 0 ? Math.round((completed / assigned) * 100) : 0;
+  const accent = PERSON_ACCENTS[name] ?? 'text-muted';
+  return (
+    <div className="glass rounded-2xl border-soft p-4">
+      <div className="flex items-center gap-2">
+        <Avatar name={name} />
+        <span className="font-medium">{name}</span>
+        <span className="ml-auto text-xs text-muted">{pct}% done</span>
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+        <div>
+          <div className={`font-display text-2xl font-bold ${accent}`}>{assigned}</div>
+          <div className="mt-0.5 text-[11px] text-muted uppercase tracking-wide">Assigned</div>
+        </div>
+        <div>
+          <div className="font-display text-2xl font-bold">{open}</div>
+          <div className="mt-0.5 text-[11px] text-muted uppercase tracking-wide">To do</div>
+        </div>
+        <div>
+          <div className="font-display text-2xl font-bold text-emerald-500 dark:text-emerald-400">
+            {completed}
+          </div>
+          <div className="mt-0.5 text-[11px] text-muted uppercase tracking-wide">Completed</div>
+        </div>
+      </div>
+      <div className="mt-3 h-1.5 rounded-full bg-black/20 dark:bg-white/10 overflow-hidden">
+        <div
+          className="h-full rounded-full bg-emerald-500"
+          style={{ width: `${Math.min(pct, 100)}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function TasksBoard({ tasks }: { tasks: MarketingTask[] }) {
   const [list, setList] = useState<MarketingTask[]>(tasks);
   const [status, setStatus] = useState<StatusFilter>('open');
@@ -281,6 +339,23 @@ export default function TasksBoard({ tasks }: { tasks: MarketingTask[] }) {
   const completed = list.filter((t) => effStatus(t) === 'completed').length;
   const skipped = list.filter((t) => effStatus(t) === 'skipped').length;
 
+  // Per-person KPI: what each of them is carrying and what they have closed
+  // out. Counts the whole board, not the current filters.
+  const perPerson = useMemo<PersonStats[]>(
+    () =>
+      ASSIGNEES.map((name) => {
+        const mine = list.filter((t) => t.assignedTo === name);
+        return {
+          name,
+          assigned: mine.length,
+          open: mine.filter((t) => effStatus(t) === 'open').length,
+          completed: list.filter((t) => effStatus(t) === 'completed' && creditedTo(t) === name)
+            .length,
+        };
+      }),
+    [list]
+  );
+
   const selectClass =
     'rounded-lg border border-soft bg-black/20 dark:bg-white/5 px-3 py-2 text-sm outline-none focus:border-indigo-400';
   const chipSelect =
@@ -289,11 +364,18 @@ export default function TasksBoard({ tasks }: { tasks: MarketingTask[] }) {
   return (
     <div>
       {/* Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
         <StatTile label="To do" value={openCount} accent="gradient-text" />
         <StatTile label="P1 to do" value={p1} accent="text-rose-500 dark:text-rose-400" />
         <StatTile label="Completed" value={completed} accent="text-emerald-500 dark:text-emerald-400" />
         <StatTile label="Skipped" value={skipped} accent="text-slate-400" />
+      </div>
+
+      {/* Per-person KPI */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        {perPerson.map((p) => (
+          <PersonCard key={p.name} stats={p} />
+        ))}
       </div>
 
       {/* Filters */}
