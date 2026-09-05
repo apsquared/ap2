@@ -15,13 +15,14 @@ export const TVF_TIKTOK="32284"
 export const BARGPT_FACEBOOK="11492"
 export const BARGPT_TWITTER="11495"
 export const BARGPT_INSTAGRAM="11488"
-export const BARGPT_TIKTOK="11604"
+export const BARGPT_TIKTOK="90514"
 
 export const AP2_SOCIAL_ACCOUNTS=[AP2_BLUESKY, AP2_TWITTER]
 export const LV_SOCIAL_ACCOUNTS=[LV_FACEBOOK, LV_TWITTER, LV_INSTAGRAM]
 export const TVF_SOCIAL_ACCOUNTS=[TVF_FACEBOOK, TVF_TWITTER, TVF_INSTAGRAM]
 export const TVF_VIDEO_SOCIAL_ACCOUNTS=[TVF_TIKTOK, TVF_INSTAGRAM]
 export const BARGPT_SOCIAL_ACCOUNTS=[BARGPT_FACEBOOK, BARGPT_TWITTER, BARGPT_INSTAGRAM]
+export const BARGPT_VIDEO_SOCIAL_ACCOUNTS=[BARGPT_TIKTOK, BARGPT_INSTAGRAM]
 
 interface PostBridgeConfig {
   apiKey: string;
@@ -199,71 +200,26 @@ export class PostBridgeUtil {
 
 
 /*
+GET https://api.post-bridge.com/v1/social-accounts  (verified 2026-09-05, 13 accounts)
 
-data": [
-    {
-      "id": 11971,
-      "platform": "tiktok",
-      "username": "LegallyVibing.com"
-    },
-    {
-      "id": 11609,
-      "platform": "bluesky",
-      "username": "ApSquared"
-    },
-    {
-      "id": 11604,
-      "platform": "tiktok",
-      "username": "BarGPT"
-    },
-    {
-      "id": 11495,
-      "platform": "twitter",
-      "username": "BarGPT"
-    },
-    {
-      "id": 11494,
-      "platform": "twitter",
-      "username": "APSquaredDev"
-    },
-    {
-      "id": 11493,
-      "platform": "facebook",
-      "username": "TV Food Maps"
-    },
-    {
-      "id": 11492,
-      "platform": "facebook",
-      "username": "Bar GPT"
-    },
-    {
-      "id": 11491,
-      "platform": "facebook",
-      "username": "Legally Vibing"
-    },
-    {
-      "id": 11490,
-      "platform": "twitter",
-      "username": "VibingLegally"
-    },
-    {
-      "id": 11489,
-      "platform": "instagram",
-      "username": "tvfoodmaps"
-    },
-    {
-      "id": 11488,
-      "platform": "instagram",
-      "username": "bar_gpt"
-    },
-    {
-      "id": 11487,
-      "platform": "instagram",
-      "username": "legallyvibing"
-    }
-  ],
+  { "id": 90514, "platform": "tiktok",    "username": "bargpt" },
+  { "id": 76202, "platform": "instagram", "username": "findmybnbco" },
+  { "id": 76198, "platform": "twitter",   "username": "idea_launch_io" },
+  { "id": 35325, "platform": "twitter",   "username": "tvfoodmaps" },
+  { "id": 32284, "platform": "tiktok",    "username": "tvfoodmaps" },
+  { "id": 11495, "platform": "twitter",   "username": "BarGPT" },
+  { "id": 11494, "platform": "twitter",   "username": "APSquaredDev" },
+  { "id": 11493, "platform": "facebook",  "username": "TV Food Maps" },
+  { "id": 11492, "platform": "facebook",  "username": "Bar GPT" },
+  { "id": 11491, "platform": "facebook",  "username": "Legally Vibing" },
+  { "id": 11489, "platform": "instagram", "username": "tvfoodmaps" },
+  { "id": 11488, "platform": "instagram", "username": "bar_gpt" },
+  { "id": 11487, "platform": "instagram", "username": "legallyvibing" }
 
-  */
+Gone from Post Bridge (constants above still reference them):
+  11604 tiktok BarGPT, 11971 tiktok LegallyVibing.com,
+  11609 bluesky ApSquared (AP2_BLUESKY), 11490 twitter VibingLegally (LV_TWITTER)
+*/
 
   /*
 
