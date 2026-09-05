@@ -29,9 +29,9 @@ Categories: `tip` (practical advice on shipping, SEO, marketing for devs, toolin
 
 ## Step 3: Schedule via Post Bridge
 
-**Always schedule posts for the NEXT day** (tomorrow relative to today's date), never same-day. This leaves a full day to review outgoing posts in the Post Bridge dashboard before they fire.
+**Spread the batch across the next 3 days** (tomorrow, the day after, and the day after that, relative to today's date), never same-day. Same-day posting leaves no room to review outgoing posts in the Post Bridge dashboard before they fire, and spacing them out keeps the account from going quiet between runs.
 
-Target roughly 9am, 1pm, and 6pm **Eastern time tomorrow**, converted to UTC, with ±20 minutes of jitter on each so timing doesn't look robotic. Check today's date and compute the timestamps carefully (watch EDT/EST offsets: EDT = UTC-4, EST = UTC-5).
+Put roughly one post on each of those three days — with a 2-post batch, use two of the three days rather than doubling up on one. Vary the time of day across the batch instead of using the same slot every day: pick from roughly 9am, 1pm, and 6pm **Eastern time**, converted to UTC, with ±20 minutes of jitter on each so timing doesn't look robotic. Check today's date and compute the timestamps carefully (watch EDT/EST offsets: EDT = UTC-4, EST = UTC-5).
 
 For each post:
 
@@ -49,12 +49,12 @@ Append one line per successfully scheduled post to the `## Posts` section of `so
 - YYYY-MM-DD | category | <post-bridge-id> | <full post text>
 ```
 
-Use the **scheduled** date (tomorrow), not today. Then commit:
+Use each post's own **scheduled** date, not today — so a batch spread over three days produces lines with three different dates. Then commit:
 
 ```
-git add social/post-log.md && git commit -m "Log scheduled X posts for <date>"
+git add social/post-log.md && git commit -m "Log scheduled X posts for <date range>"
 ```
 
 ## Step 5: Report
 
-End with a short summary: each post's text, category, scheduled time (ET), and Post Bridge ID, plus a reminder that they can be reviewed or deleted in the Post Bridge dashboard before they go out tomorrow.
+End with a short summary: each post's text, category, scheduled date and time (ET), and Post Bridge ID, plus a reminder that they can be reviewed or deleted in the Post Bridge dashboard before they go out over the next few days.
