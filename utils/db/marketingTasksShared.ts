@@ -46,6 +46,12 @@ export interface MarketingTask {
   title: string;
   actionUrl: string;
   materials: string;
+  /**
+   * Ready-to-paste agent prompt written by the filing agent (`Prompt:` in
+   * TASKS.md). Optional — when absent the admin board generates one from the
+   * task's fields via utils/marketingTaskPrompt.
+   */
+  agentPrompt?: string;
   status: TaskStatus;
   assignedTo: Assignee;
   resolution: Resolution;

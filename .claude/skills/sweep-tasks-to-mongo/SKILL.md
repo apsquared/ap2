@@ -15,7 +15,7 @@ The heavy lifting is a deterministic Node script — do not re-implement parsing
 
 1. Reads `MY_PROJECTS.md` in this repo (ap2) — the **Source Directory** column is the authoritative, never-hardcoded project list.
 2. For every project, classifies scaffold state (`scaffolded` / `partial` / `not-scaffolded` / `unreadable`) exactly like the `my-marketing-tasks` skill.
-3. For each `scaffolded` project, parses `marketing/TASKS.md` — both the `## Open` and `## Done` blocks — into one document per task, preserving the `URL:` action link and the full `Materials:` block (including multi-line bullet lists).
+3. For each `scaffolded` project, parses `marketing/TASKS.md` — both the `## Open` and `## Done` blocks — into one document per task, preserving the `URL:` action link, the full `Materials:` block (including multi-line bullet lists), and an optional `Prompt:` block.
 4. Upserts each task into MongoDB keyed by a stable `_id` of `${projectSlug}:${taskId}` (e.g. `bargpt:T-001`), so re-running is idempotent and edits update in place.
 5. **Reconciles per project:** any document for a successfully-read project that this sweep did not touch (the task was deleted from the file) is marked `status: "archived"`. Reconciliation is scoped per project, so a bad path or unreadable repo never wipes another project's tasks.
 
@@ -54,6 +54,7 @@ Document shape (one per task):
 | `title` | short imperative title |
 | `actionUrl` | the exact URL to act on |
 | `materials` | full inline materials block (markdown, newlines preserved) |
+| `agentPrompt` | the task's `Prompt:` block — task-specific execution steps written by the owning repo's agent. Optional: the admin board assembles the full paste-ready prompt in `utils/marketingTaskPrompt.ts`, using these steps when present and generic per-category steps when not. |
 | `status` | `open` (live), `done` (checked or under ## Done), or `archived` (removed from file) |
 | `checked` | whether the checkbox was ticked |
 | `firstSeenAt` | first sweep that saw this task (set once) |

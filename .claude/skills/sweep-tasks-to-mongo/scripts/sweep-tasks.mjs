@@ -118,26 +118,32 @@ function dedent(lines) {
 /**
  * Parse a TASKS.md body into task objects. Captures both ## Open and ## Done.
  * Each task header is followed by indented continuation lines; a `URL:` marker
- * begins the action URL and a `Materials:` marker begins the materials block
- * (which may be an inline value and/or a multi-line bullet list). Lines are
- * routed to whichever field is currently active, so a bare `Materials:` line
- * followed by bullets is captured correctly.
+ * begins the action URL, a `Materials:` marker begins the materials block, and
+ * an optional `Prompt:` marker begins a ready-to-paste agent prompt (any of
+ * which may be an inline value and/or a multi-line block). Lines are routed to
+ * whichever field is currently active, so a bare `Materials:` line followed by
+ * bullets is captured correctly.
  */
 function parseTasks(md) {
   const lines = md.split('\n');
   const tasks = [];
   let section = null; // 'open' | 'done' | null
   let current = null;
-  let field = null; // 'url' | 'materials' | null
+  let field = null; // 'url' | 'materials' | 'prompt' | null
+
+  // Join a field's inline value with its indented continuation block.
+  const join = (inline, lines) =>
+    [inline, dedent(lines)].filter((s) => s && s.trim()).join('\n').trim();
 
   const flush = () => {
     if (current) {
-      const inline = current._matInline;
-      const block = dedent(current._matLines);
-      current.materials = [inline, block].filter((s) => s && s.trim()).join('\n').trim();
+      current.materials = join(current._matInline, current._matLines);
+      current.agentPrompt = join(current._promptInline, current._promptLines);
       current.actionUrl = current.actionUrl.trim();
       delete current._matInline;
       delete current._matLines;
+      delete current._promptInline;
+      delete current._promptLines;
       tasks.push(current);
     }
     current = null;
@@ -168,11 +174,14 @@ function parseTasks(md) {
         title: m[6].trim(),
         actionUrl: '',
         materials: '',
+        agentPrompt: '',
         // Open + unchecked = live. Anything checked, or under ## Done, is done.
         status: section === 'done' || checked ? 'done' : 'open',
         rawSection: section,
         _matInline: '',
         _matLines: [],
+        _promptInline: '',
+        _promptLines: [],
       };
       field = null;
       continue;
@@ -183,14 +192,20 @@ function parseTasks(md) {
     const trimmed = line.trim();
     const urlM = trimmed.match(/^URL:\s*(.*)$/i);
     const matM = trimmed.match(/^Materials:\s*(.*)$/i);
+    const promptM = trimmed.match(/^Prompt:\s*(.*)$/i);
     if (urlM) {
       current.actionUrl = urlM[1].trim();
       field = 'url';
     } else if (matM) {
       current._matInline = matM[1].trim();
       field = 'materials';
+    } else if (promptM) {
+      current._promptInline = promptM[1].trim();
+      field = 'prompt';
     } else if (field === 'materials') {
       current._matLines.push(line); // keep raw indent for dedent
+    } else if (field === 'prompt') {
+      current._promptLines.push(line);
     } else if (field === 'url' && trimmed) {
       current.actionUrl += (current.actionUrl ? ' ' : '') + trimmed;
     }
@@ -234,6 +249,7 @@ async function main() {
           title: t.title,
           actionUrl: t.actionUrl,
           materials: t.materials,
+          agentPrompt: t.agentPrompt,
           status: t.status,
           checked: t.checked,
           lastSweptAt: now,

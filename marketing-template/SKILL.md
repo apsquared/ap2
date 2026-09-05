@@ -73,7 +73,7 @@ If the run touched anything outside `marketing/` (pages, content files, code): r
 1. Append to `marketing/logs/activity-log.md`: `- YYYY-MM-DD | run#N | <activity> | <action> | <outcome> | <ref>` (ref = commit sha, Post Bridge ID, URL, or task ID; one line per action). run#N = previous run number + 1.
 2. Social runs also append to `post-log.md`: `- YYYY-MM-DD(scheduled date) | platform | category | post-bridge-id | full post text`
 3. Content runs also append to `content-ledger.md`; directory/backlink runs update `link-tracker.md`.
-4. New human tasks go in `marketing/TASKS.md > Open` with the next sequential `T-NNN` id. Grep Open AND Done first — never re-add.
+4. New human tasks go in `marketing/TASKS.md > Open` with the next sequential `T-NNN` id. Grep Open AND Done first — never re-add. Assume every task will be worked by an AI agent: the admin board turns each one into a paste-ready prompt, so **the materials must be self-contained** (exact URL, every value the form or reply needs, verified repo-relative asset paths). Add a `Prompt:` block with 3–8 lines of task-specific execution steps — what will block the agent, the exact values and paths, what "done" looks like. The board already supplies the framing, browser instructions, and the hard stops (no spending, no credentials, no publishing without approval), so never restate those. See the format note at the top of `TASKS.md`.
 5. Commit content changes and marketing-state changes **separately** (`feat(marketing): ...` / `chore(marketing): run log YYYY-MM-DD`), then push.
 
 ## Step 6: Report

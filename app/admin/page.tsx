@@ -36,6 +36,12 @@ export default async function AdminTasksPage() {
           <code className="text-sm">marketing/TASKS.md</code>. Refresh the data by running the{' '}
           <code className="text-sm">sweep-tasks-to-mongo</code> skill.
         </p>
+        <p className="mt-2 text-muted max-w-2xl text-sm">
+          Every task carries a ready-to-paste agent prompt &mdash; hit{' '}
+          <span className="text-indigo-600 dark:text-indigo-300">Copy prompt</span> and drop it into
+          Claude or Codex. Prompts tell the agent to use its browser tools, and always stop short of
+          paying, entering credentials, or posting publicly.
+        </p>
       </div>
 
       {error ? (

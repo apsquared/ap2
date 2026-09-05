@@ -7,6 +7,7 @@ import {
   type MarketingTask,
   type Resolution,
 } from '@/utils/db/marketingTasksShared';
+import { buildAgentPrompt, hasRepoSteps, involvesPayment } from '@/utils/marketingTaskPrompt';
 
 type EffStatus = 'open' | 'completed' | 'skipped' | 'archived';
 type StatusFilter = EffStatus | 'all';
@@ -89,17 +90,45 @@ function legacyCopy(text: string): boolean {
   return ok;
 }
 
-function CopyButton({ text, label, title }: { text: string; label: string; title?: string }) {
+/**
+ * Every task gets a paste-ready agent prompt, assembled from its own fields plus
+ * any execution steps its repo's agent wrote. Building 100+ of them per render would
+ * be wasted work, so they are built on first use and cached by task id (the
+ * task list is only mutated through `patch`, which never touches prompt inputs).
+ */
+const promptCache = new Map<string, string>();
+
+function promptFor(task: MarketingTask): string {
+  const hit = promptCache.get(task._id);
+  if (hit) return hit;
+  const built = buildAgentPrompt(task);
+  promptCache.set(task._id, built);
+  return built;
+}
+
+function CopyButton({
+  text,
+  label,
+  title,
+  emphasis = false,
+}: {
+  // A thunk defers building the (long) agent prompt until it is actually copied.
+  text: string | (() => string);
+  label: string;
+  title?: string;
+  emphasis?: boolean;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function copy(e: React.MouseEvent) {
     e.stopPropagation();
+    const value = typeof text === 'function' ? text() : text;
     let ok = false;
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(value);
       ok = true;
     } catch {
-      ok = legacyCopy(text);
+      ok = legacyCopy(value);
     }
     if (!ok) {
       alert('Could not copy to the clipboard.');
@@ -118,7 +147,9 @@ function CopyButton({ text, label, title }: { text: string; label: string; title
       className={`rounded-lg border bg-black/20 dark:bg-white/5 px-2.5 py-1.5 text-xs font-medium outline-none transition-colors ${
         copied
           ? 'border-emerald-500/40 text-emerald-600 dark:text-emerald-300'
-          : 'border-soft text-muted hover:border-indigo-400'
+          : emphasis
+            ? 'border-indigo-500/40 text-indigo-600 dark:text-indigo-300 hover:border-indigo-400'
+            : 'border-soft text-muted hover:border-indigo-400'
       }`}
     >
       {copied ? '✓ Copied' : label}
@@ -252,6 +283,57 @@ function PersonCard({ stats }: { stats: PersonStats }) {
           style={{ width: `${Math.min(pct, 100)}%` }}
         />
       </div>
+    </div>
+  );
+}
+
+/**
+ * The paste-into-an-agent prompt for a task. Kept collapsed by default — it runs
+ * a couple of screens long — but the copy button works without expanding it,
+ * which is the common case: copy, paste into Claude or Codex, go.
+ */
+function AgentPrompt({ task }: { task: MarketingTask }) {
+  const [show, setShow] = useState(false);
+  const fromRepo = hasRepoSteps(task);
+  const payment = involvesPayment(task);
+
+  return (
+    <div className="mt-2 rounded-xl border border-indigo-500/25 bg-indigo-500/[0.06] p-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[11px] uppercase tracking-wide text-indigo-600 dark:text-indigo-300">
+          Agent prompt
+        </span>
+        <Badge className="border-soft text-muted">
+          {fromRepo ? 'steps from the repo' : 'generated'}
+        </Badge>
+        {payment && (
+          <Badge className="bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30">
+            ⚠ payment step — the prompt stops before paying
+          </Badge>
+        )}
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShow((v) => !v);
+            }}
+            className="rounded-lg border border-soft bg-black/20 dark:bg-white/5 px-2.5 py-1.5 text-xs font-medium text-muted hover:border-indigo-400"
+          >
+            {show ? 'Hide' : 'Show'}
+          </button>
+          <CopyButton text={() => promptFor(task)} label="Copy prompt" emphasis />
+        </div>
+      </div>
+      <p className="mt-2 text-xs text-muted">
+        Paste into Claude or Codex as-is. It carries the materials, tells the agent to use its
+        browser tools, and hard-stops before any payment, credential, or public post.
+      </p>
+      {show && (
+        <pre className="mt-3 max-h-96 overflow-auto rounded-lg border border-soft bg-black/20 dark:bg-black/30 p-3 text-[11px] leading-relaxed whitespace-pre-wrap break-words">
+          {promptFor(task)}
+        </pre>
+      )}
     </div>
   );
 }
@@ -476,6 +558,12 @@ export default function TasksBoard({ tasks }: { tasks: MarketingTask[] }) {
                         </div>
 
                         <div className="flex flex-wrap items-center justify-end gap-2 shrink-0">
+                          <CopyButton
+                            text={() => promptFor(t)}
+                            label="Copy prompt"
+                            emphasis
+                            title="Copy a ready-to-paste prompt for Claude or Codex"
+                          />
                           {message && (
                             <CopyButton
                               text={message}
@@ -541,6 +629,7 @@ export default function TasksBoard({ tasks }: { tasks: MarketingTask[] }) {
                               Open action link ↗
                             </a>
                           )}
+                          <AgentPrompt task={t} />
                           {message && (
                             <div className="mt-2 rounded-xl border border-soft bg-black/10 dark:bg-white/5 p-3">
                               <div className="flex items-center justify-between gap-3 mb-2">

@@ -20,6 +20,15 @@ One-time checklist. After this, the repo is fully self-contained: its agent neve
 5. **Commit** everything to the repo.
 6. **First supervised run**: `/marketing-run` with Frank watching. Verify: one activity type only, logs formatted right, build green before any content commit, next-day posts visible in Post Bridge dashboard, TASKS items executable in <5 min. Fix the repo's skill/AGENT.md from friction; back-port generic fixes here.
 
+## Rolling a template change into already-scaffolded repos
+
+Each repo owns its copy of the skill and task file, so template changes don't reach them
+on their own. `ADOPT-TASK-PROMPTS.md` is a paste-once prompt for the execution-prompt
+format (`Prompt:` on every new task): run it in the project repo and it updates that
+repo's `TASKS.md` header and `marketing-run` skill, leaving the existing queue alone.
+Tasks filed before the change keep working — the admin board falls back to generic
+per-category steps when a task has no `Prompt:` block.
+
 ## Notes
 
 - WordSmash shares X account 11494 (APSquaredDev) — its AGENT.md must carry the "≤1 project post per day, 3+ posts apart" rule and coordinate via its own post-log.

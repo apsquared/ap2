@@ -36,6 +36,7 @@ export async function getMarketingTasks(): Promise<MarketingTask[]> {
     title: d.title ?? '',
     actionUrl: d.actionUrl ?? '',
     materials: d.materials ?? '',
+    agentPrompt: d.agentPrompt ?? '',
     status: d.status ?? 'open',
     assignedTo: normalizeAssignee(d.assignedTo),
     resolution: normalizeResolution(d.resolution),
