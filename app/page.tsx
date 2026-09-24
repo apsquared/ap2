@@ -1,6 +1,6 @@
 import { allPosts } from "@/.contentlayer/generated"
 import Link from "next/link"
-import { ArrowRight, ArrowUpRight, Beer, Map, Leaf, Rocket, Home as HomeIcon, Type } from "lucide-react"
+import { ArrowRight, ArrowUpRight, Beer, Map, Leaf, Rocket, Home as HomeIcon, Type, Target } from "lucide-react"
 import { Hero } from "@/components/hero"
 import { ProductCard } from "@/components/product-card"
 import { PostCard } from "@/components/post-card"
@@ -12,6 +12,13 @@ const products = [
     href: "https://idea-launch.io",
     accent: "from-orange-400 to-red-500",
     icon: <Rocket className="h-5 w-5" />,
+  },
+  {
+    name: "BuyerCue",
+    description: "B2B SaaS leads with buying signals — find software companies already paying for growth, with sourced evidence.",
+    href: "https://www.buyercue.io",
+    accent: "from-cyan-400 to-blue-500",
+    icon: <Target className="h-5 w-5" />,
   },
   {
     name: "BarGPT",

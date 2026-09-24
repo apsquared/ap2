@@ -11,6 +11,7 @@ Internal project tracker for APSquared. Listed on the homepage product grid in [
 | FindMyBnB | https://www.findmybnb.co | `/Users/frankapap/apsquared/findmybnb` | Claude | Find your perfect short-term rental — search and discover vacation stays that fit. |
 | WordSmash | https://wordsmash.apsquared.co | `/Users/frankapap/apsquared/letters-game/falling-letters-game-main` | Claude (via AP2) | A fast-paced word game — smash letters into words and climb the leaderboard. |
 | SaaS Circuit | https://saascircuit.com | `/Users/frankapap/apsquared/saas-circuit` | Claude | A verified weekly distribution league for live SaaS products — enter a category bracket, earn community-voted wins, get proof of the discovery you generated. |
+| BuyerCue | https://www.buyercue.io | `/Users/frankapap/apsquared/saas-opedia` | Claude | B2B SaaS leads with buying signals — find software companies already paying for growth, with sourced evidence and public business contact routes. |
 | AP2 (this repo) | https://apsquared.co | `/Users/frankapap/apsquared/ap2` | Claude | The APSquared marketing site itself. |
 
 ## Social Accounts (Post Bridge)
@@ -26,6 +27,7 @@ Account IDs for posting via the Post Bridge API/CLI (`npx postbridge-cli post --
 | FindMyBnB | — | 76202 (`findmybnbco`) | — | — |
 | WordSmash | 11494 (`APSquaredDev`) | — | — | — |
 | SaaS Circuit | — | — | — | — |
+| BuyerCue | — | — | — | — |
 
 **Shared account:**
 - `11494` — X (Twitter), `APSquaredDev` (general brand account, used for WordSmash)
@@ -36,3 +38,4 @@ Account IDs for posting via the Post Bridge API/CLI (`npx postbridge-cli post --
 - The marketing site itself (this repo) deploys to https://apsquared.co via Vercel.
 - WordSmash has no dedicated accounts; it posts via the shared APSquaredDev X account.
 - SaaS Circuit has no social accounts yet — create an X account and connect it to Post Bridge before its agent can run social activities.
+- BuyerCue is the customer-facing product; the repo and internal pipeline are named SaaS-Opedia. No social accounts yet — create an X account and connect it to Post Bridge before its agent can run social activities.

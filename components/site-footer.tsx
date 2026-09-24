@@ -44,6 +44,7 @@ export function SiteFooter() {
 
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-muted">
             <a className="hover:text-[rgb(var(--fg))] transition-colors" href="https://idea-launch.io">Idea Launch</a>
+            <a className="hover:text-[rgb(var(--fg))] transition-colors" href="https://www.buyercue.io">BuyerCue</a>
             <a className="hover:text-[rgb(var(--fg))] transition-colors" href="https://www.tvfoodmaps.com">TVFoodMaps</a>
             <a className="hover:text-[rgb(var(--fg))] transition-colors" href="https://www.bargpt.app">BarGPT</a>
             <a className="hover:text-[rgb(var(--fg))] transition-colors" href="https://www.legallyvibing.com">Legally Vibing</a>
