@@ -1,6 +1,6 @@
 import { allPosts } from "@/.contentlayer/generated"
 import Link from "next/link"
-import { ArrowRight, ArrowUpRight, Beer, Map, Leaf, Rocket, Home as HomeIcon, Type, Target } from "lucide-react"
+import { ArrowRight, ArrowUpRight, Beer, Map, Leaf, Rocket, Home as HomeIcon, Type, Target, Github } from "lucide-react"
 import { Hero } from "@/components/hero"
 import { ProductCard } from "@/components/product-card"
 import { PostCard } from "@/components/post-card"
@@ -19,6 +19,13 @@ const products = [
     href: "https://www.buyercue.io",
     accent: "from-cyan-400 to-blue-500",
     icon: <Target className="h-5 w-5" />,
+  },
+  {
+    name: "launch-agent",
+    description: "Free, open source AI agent that lists your product on 30+ startup and SaaS directories. Contributors welcome.",
+    href: "https://github.com/apsquared/launch-agent",
+    accent: "from-emerald-400 to-teal-500",
+    icon: <Github className="h-5 w-5" />,
   },
   {
     name: "BarGPT",

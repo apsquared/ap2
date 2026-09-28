@@ -1,0 +1,107 @@
+---
+title: launch-agent - A Free, Open Source AI Agent That Lists Your Product on Startup Directories
+description: We open sourced launch-agent, the tool we use to submit our products to 30+ startup and SaaS directories with Claude Code, Codex or OpenCode. It's MIT licensed, runs on your machine, and we're looking for contributors.
+date: "2026-09-28"
+image: https://www.apsquared.co/launch-agent-og.png
+---
+
+Today we're open sourcing [**launch-agent**](https://github.com/apsquared/launch-agent). It gets your product onto 30+ startup and SaaS directories without you filling in the forms yourself.
+
+It's **free**, it's **MIT licensed**, it runs **on your own machine** with the coding agent you already use, and we'd love your help making it better.
+
+![launch-agent: prepare your listing, approve the batch, let the agent submit](https://www.apsquared.co/launch-agent-overview.png)
+
+---
+
+## 😩 The Problem: The Directory Weekend
+
+Every launch checklist says to list your product on the directories. Then you see what that means: thirty sign-up flows, the same tagline pasted thirty times, logo uploads, badge embeds, upsell dialogs and "free queue" fine print.
+
+We've done this by hand for [BarGPT](https://www.bargpt.app), [Idea Launch](https://www.idea-launch.io), [FindMyBnB](https://www.findmybnb.co) and more. It's a weekend of copy-paste you could spend building. So we handed it to an AI agent.
+
+---
+
+## ⚙️ How It Works
+
+Clone the repo, open Claude Code, Codex or OpenCode in the folder, and talk to it:
+
+1. **"Set up my site myproduct.com for promotion."** Point it at your product's repo, or answer a few questions. It drafts your taglines, descriptions, launch comment, categories and tags from your code and site, and goes through them with you until they read right.
+2. **"Start promotion."** You sign a dedicated Chrome profile into your launch Google account, once.
+3. **Approve a batch.** It proposes the directories that fit best. Cut any you don't want and approve the rest.
+4. **Let it work.** It submits a few at a time, takes the free route every time, collects each directory's badge into one file for your site, and gives you a short list of the few things that need a human.
+
+![Example launch-agent conversation](https://www.apsquared.co/launch-agent-chat.png)
+
+*An illustrative mockup of a conversation with the agent.*
+
+---
+
+## 📊 The First Real Run
+
+We pointed it at [BuyerCue](https://www.buyercue.io), our newest product. It went to 17 directories in three days:
+
+- **14 submitted.** 4 are already live and the rest are scheduled or in review.
+- **$0 spent.** Paid-only directories were reported to us, not bought.
+- **3 quick steps by hand:** an emailed sign-in code, a launch-date booking and one badge check.
+
+Free queues are long, so listings keep landing for weeks after the run. But the tedious part is done.
+
+---
+
+## 🔒 Safe to Leave Alone
+
+An agent driving your browser needs hard limits, so these are **enforced in code, not left to the prompt**:
+
+- It only submits the copy **you approved**
+- It **never pays** for anything and turns down the upsells
+- It **never enters passwords** or solves CAPTCHAs
+- It **stays on each directory's own site**
+- It **won't submit founder-led launches** like Product Hunt or Show HN. Those stay with you
+
+launch-agent is for listing your own product once per directory, through each directory's normal free route. It is not a tool for mass submissions.
+
+---
+
+## 💚 Why Open Source?
+
+We could have wrapped this in a paid SaaS. We didn't, for a few reasons:
+
+- **It runs on your machine, with your accounts.** Your Google sign-in and your Chrome profile never touch our servers. You can read every line that drives your browser.
+- **Bring your own agent.** It works with Claude Code, Codex or OpenCode, so you're not paying us for AI you already pay for.
+- **Directories change constantly.** Forms move, free tiers disappear and new launch sites show up every week. One team can't keep up with that. A community can.
+
+That last point is the real reason. **The tool is only as good as its directory playbooks**, and that's where we need help.
+
+---
+
+## 🤝 We're Looking for Contributors
+
+The project is early. APSquared uses it to run directory launches across its own projects, on macOS, so expect some rough edges. Here's how you can help, most useful first:
+
+1. **Fix a directory playbook.** Each directory is one small YAML file in [`platforms/`](https://github.com/apsquared/launch-agent/tree/main/platforms) describing its sign-in, free route, badge rules and a short "recipe" of how the form actually goes. When a site changes its flow, updating the recipe is often a few lines.
+2. **Add a directory.** Know a good launch site that's missing? Copy a similar playbook and fill it in from the site. There's an [issue template](https://github.com/apsquared/launch-agent/issues/new/choose) if you'd rather just tell us about it.
+3. **Share what your runs learned.** Every run saves notes about each site it visits. Turning those into playbook updates (without anything about your own product) helps the next person's run go cleanly. Your coding agent can draft this for you.
+4. **Write code.** Linux and Windows support, new sign-in routes, and bug fixes are all wide open. `npm test` needs no Chrome, no agent CLI and no setup, and CI runs it on Linux and macOS.
+
+[CONTRIBUTING.md](https://github.com/apsquared/launch-agent/blob/main/CONTRIBUTING.md) has the playbook format and the rules for code changes. The one firm rule: the safety guards are the project's core promise, so a change that loosens them needs a strong reason and a test.
+
+---
+
+## 🛠️ Built the AP2 Way
+
+Like most things we ship lately, launch-agent was built largely by AI coding agents, and it's written in TypeScript. It's the same approach behind our [marketing automation](https://www.apsquared.co/posts/marketing-automation-claude-codex) and [programmatic SEO](https://www.apsquared.co/posts/programmatic-seo-ai-agents) work: let AI do the tedious parts and keep the judgment for yourself.
+
+---
+
+## 🚀 Try It
+
+```bash
+git clone https://github.com/apsquared/launch-agent.git && cd launch-agent
+npm install
+```
+
+Then open your coding agent in that folder and say: **"Set up my site myproduct.com for promotion."**
+
+👉 **[View launch-agent on GitHub](https://github.com/apsquared/launch-agent)**. A ⭐ helps other founders find it, and a pull request helps even more.
+
+Tell us which directory you want added next on [Twitter/X](https://twitter.com/APSquaredDev).
