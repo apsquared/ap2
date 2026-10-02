@@ -1,14 +1,16 @@
 # Daily X posts for APSquaredDev
 
-You are posting to the APSquaredDev X (Twitter) account via Post Bridge to grow a following among solo devs and side-project builders. Work from the repo at `/Users/frankapap/apsquared/ap2`.
+You are drafting posts for the APSquaredDev X (Twitter) account to grow a following among solo devs and side-project builders. Work from the repo at `/Users/frankapap/apsquared/ap2`.
+
+> **Auto-posting is OFF.** The account has a temporary reach label from X, so nothing gets posted or scheduled automatically. Do not call Post Bridge (`postbridge-cli`, the Post Bridge API, or the app's `/api/social-*` routes) for this account under any circumstances. Your only output is drafts saved to `social/x-drafts.md`, which the owner reviews and posts by hand if they choose.
 
 **Mission:** be genuinely useful to people building software alone or on the side. Growth comes from posts that help, resonate, or start conversations — not from promotion.
 
 ## Step 1: Read the post history
 
-Read `social/post-log.md` (at least the last 30 entries). Then:
+Read `social/post-log.md` (at least the last 30 entries) and any unposted drafts in `social/x-drafts.md`. Then:
 
-- Do not reuse a topic or angle that appears in the last 20 posts. No near-duplicates in phrasing, structure, or opening.
+- Do not reuse a topic or angle that appears in the last 20 posts or in any pending draft. No near-duplicates in phrasing, structure, or opening.
 - Note the categories of recent posts and rotate. Never use the same category twice in a row, including across today's batch.
 - At most 1 `project` post per day, and only if the last `project` post is 3+ posts back in the log.
 
@@ -27,34 +29,22 @@ Categories: `tip` (practical advice on shipping, SEO, marketing for devs, toolin
 
 **Project facts** come only from `MY_PROJECTS.md` in the repo root — never invent metrics or features. Current projects: Idea Launch (idea-launch.io), BarGPT (bargpt.app), TVFoodMaps (tvfoodmaps.com), Legally Vibing, FindMyBnB, WordSmash.
 
-## Step 3: Schedule via Post Bridge
+## Step 3: Save drafts (do not post)
 
-**Spread the batch across the next 3 days** (tomorrow, the day after, and the day after that, relative to today's date), never same-day. Same-day posting leaves no room to review outgoing posts in the Post Bridge dashboard before they fire, and spacing them out keeps the account from going quiet between runs.
-
-Put roughly one post on each of those three days — with a 2-post batch, use two of the three days rather than doubling up on one. Vary the time of day across the batch instead of using the same slot every day: pick from roughly 9am, 1pm, and 6pm **Eastern time**, converted to UTC, with ±20 minutes of jitter on each so timing doesn't look robotic. Check today's date and compute the timestamps carefully (watch EDT/EST offsets: EDT = UTC-4, EST = UTC-5).
-
-For each post:
+Add the batch at the top of the `## Drafts` section of `social/x-drafts.md` (create the file with that heading if it doesn't exist), one line per post:
 
 ```
-npx postbridge-cli post --caption "<post text>" --accounts 11494 --schedule "<ISO UTC timestamp>"
+- drafted YYYY-MM-DD | category | <full post text>
 ```
 
-Capture the post ID from each response. If one post fails, note the error and continue with the others.
-
-## Step 4: Update the log
-
-Append one line per successfully scheduled post to the `## Posts` section of `social/post-log.md`:
+Use today's date. Do not schedule, post, or pick posting times. Then commit:
 
 ```
-- YYYY-MM-DD | category | <post-bridge-id> | <full post text>
+git add social/x-drafts.md && git commit -m "Draft X posts for <today's date>"
 ```
 
-Use each post's own **scheduled** date, not today — so a batch spread over three days produces lines with three different dates. Then commit:
+Do not touch `social/post-log.md`. That log is only for posts that actually went out, and the owner updates it when they post a draft by hand.
 
-```
-git add social/post-log.md && git commit -m "Log scheduled X posts for <date range>"
-```
+## Step 4: Report
 
-## Step 5: Report
-
-End with a short summary: each post's text, category, scheduled date and time (ET), and Post Bridge ID, plus a reminder that they can be reviewed or deleted in the Post Bridge dashboard before they go out over the next few days.
+End with a short summary: each draft's text and category, plus a reminder that nothing was posted and the drafts are in `social/x-drafts.md` to post manually.
