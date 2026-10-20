@@ -1,6 +1,6 @@
 import { allPosts } from "@/.contentlayer/generated"
 import Link from "next/link"
-import { ArrowRight, ArrowUpRight, Beer, Map, Leaf, Rocket, Home as HomeIcon, Type, Target, Github } from "lucide-react"
+import { ArrowRight, ArrowUpRight, Beer, Map, Leaf, Rocket, Home as HomeIcon, Type, Target, Github, Megaphone } from "lucide-react"
 import { Hero } from "@/components/hero"
 import { ProductCard } from "@/components/product-card"
 import { PostCard } from "@/components/post-card"
@@ -26,6 +26,13 @@ const products = [
     href: "https://github.com/apsquared/launch-agent",
     accent: "from-emerald-400 to-teal-500",
     icon: <Github className="h-5 w-5" />,
+  },
+  {
+    name: "promotion-agent",
+    description: "Free, open source marketing agent for Claude Code, Codex and OpenCode. Promote one project or many with reviewable drafts.",
+    href: "https://github.com/apsquared/promotion-agent",
+    accent: "from-violet-400 to-fuchsia-500",
+    icon: <Megaphone className="h-5 w-5" />,
   },
   {
     name: "BarGPT",

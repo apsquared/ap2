@@ -1,0 +1,113 @@
+---
+title: promotion-agent - A Free, Open Source Marketing Agent for Claude Code, Codex and OpenCode
+description: We open sourced promotion-agent, the marketing workflow we use to promote our products with the coding agent we already pay for. It turns your product repo into reviewable drafts, demo videos and a next-action list, for one project or many. MIT licensed.
+date: "2026-10-20"
+image: https://www.apsquared.co/promotion-agent-og.png
+---
+
+Today we're open sourcing [**promotion-agent**](https://github.com/apsquared/promotion-agent). It's a marketing agent that runs inside **Claude Code, Codex or OpenCode** and turns your product repo into marketing drafts, demo videos and a list of what to do next.
+
+It's **free**, it's **MIT licensed**, it works for **one project or a whole portfolio**, and it needs no extra API key, database or publishing account to start drafting.
+
+![promotion-agent: marketing work, inside your agent](https://www.apsquared.co/promotion-agent-og.png)
+
+---
+
+## 😩 The Problem: Shipping Is the Easy Part
+
+If you build with an AI coding agent, shipping got fast. Telling people about what you shipped didn't. Every product still needs posts, launch notes, directory listings, replies in the right threads and some memory of what you already said last week.
+
+We run a lot of small products at APSquared, and we wrote about [how we automated marketing for 7 projects](https://www.apsquared.co/posts/marketing-automation-claude-codex) with one agent per repo. promotion-agent is the next version of that idea, cleaned up so anyone can use it.
+
+---
+
+## ⚙️ How It Works
+
+Clone the repo, open it in your coding agent, and talk to it:
+
+1. **"Set up promotion for my project Example Desk and draft one X post for review."** The agent finds your local project, confirms it's the right one, creates a separate promotion workspace and writes a draft from facts in your product docs.
+2. **"Make it shorter and focus on the main benefit."** Iterate in the same chat. Every version is saved.
+3. **"What's the status?"** It reports what's ready, what needs your decision and what's next.
+
+Next time, open the promotion workspace and pick up where you left off. Drafts, past topics, research and open tasks are all still there.
+
+---
+
+## 🧰 What You Can Ask For
+
+- "Prepare a directory submission kit."
+- "Find relevant discussions and draft helpful replies." (Reddit and X search skills are included.)
+- "Analyze our competitors and find where people discuss them."
+- "Propose a blog article" or "Recommend SEO improvements."
+- "Turn the site into a short demo video." It builds the video with [HyperFrames](https://github.com/heygen-com/hyperframes), and you approve the script first.
+- "Prepare a launch pack for what I shipped since last Friday." An X announcement, release notes, a customer explanation and a demo storyboard, each claim linked to the commit it came from.
+- "Help me find my first 10 paying customers. I have 30 minutes a day."
+- "Review @myhandle and create a customized X growth plan."
+- "Schedule this post for Tuesday 9am."
+
+Posting starts out **manual**: the agent hands you the exact text, account and time. If you use [Post Bridge](https://www.post-bridge.com), it can schedule posts for you, after you approve each one.
+
+---
+
+## 🗂️ One Project or Many
+
+Say the setup line again with another product's name. Each product gets its **own workspace** with its own context, drafts, tasks and logs, so your projects never bleed into each other.
+
+Want the big picture? Ask **"Open the review desk."** A local web app shows an **All projects** board plus a board per product, with each task and the exact prompt to paste to move it forward.
+
+---
+
+## 🔒 Draft First, Always
+
+A marketing agent with your accounts needs clear limits:
+
+- Your product repo is treated as **read-only**. Marketing work lives in a separate, private workspace.
+- Everything starts as a **draft**. Publishing, sending outreach, spending money, committing and pushing each need your explicit OK.
+- Claims come from **your product docs**. Missing facts get flagged, not invented. No made-up metrics or testimonials.
+- Routine context collection **skips env files, keys, tokens and credentials**.
+- It never asks for your Post Bridge key. You set that up yourself.
+
+There's no background worker. The agent only works while you're in a conversation with it.
+
+---
+
+## 💚 Why Open Source?
+
+- **Bring your own agent.** You already pay for Claude, Codex or OpenCode. You shouldn't pay a marketing SaaS for the same model again.
+- **Your files stay on your machine.** Workspaces are local, and you can read every workflow the agent follows.
+- **Marketing playbooks get better with more people.** New workflows, new channels and better prompts are easier to build as a community.
+
+---
+
+## 🤝 Contributors Welcome
+
+The project is early access. Helper and build checks run on Ubuntu and macOS, but there are rough edges. Good places to start:
+
+- **Try it on your product** and open an issue about anything that confused you or produced a bad draft.
+- **Add a workflow.** Each activity is a documented workflow in [`templates/activities/`](https://github.com/apsquared/promotion-agent/tree/main/templates/activities). New channels and use cases are welcome.
+- **Add a connector** for another scheduling or publishing tool.
+- **Grab a task** from the [project plan](https://github.com/apsquared/promotion-agent/blob/main/docs/maintainers/PLAN.md).
+
+[CONTRIBUTING.md](https://github.com/apsquared/promotion-agent/blob/main/CONTRIBUTING.md) explains the rules for workflows, connectors and code changes.
+
+---
+
+## 🛠️ Built the AP2 Way
+
+Like [launch-agent](https://www.apsquared.co/posts/launch-agent-open-source), our open source directory submission agent, promotion-agent was built largely by AI coding agents. The approach is the same: let AI handle the tedious parts and keep the judgment calls for yourself.
+
+---
+
+## 🚀 Try It
+
+You'll need Git, Node.js 22.14+ and Claude Code, Codex or OpenCode.
+
+```bash
+git clone https://github.com/apsquared/promotion-agent.git
+```
+
+Then open your coding agent in that folder and say: **"Set up promotion for my project [your product] and draft one X post for review."**
+
+👉 **[View promotion-agent on GitHub](https://github.com/apsquared/promotion-agent)**. A ⭐ helps other founders find it, and a pull request helps even more.
+
+Tell us what you'd like it to do next on [Twitter/X](https://twitter.com/APSquaredDev).
